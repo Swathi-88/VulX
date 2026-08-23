@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+setup.py
+src/anvil/__init__.py
+src/anvil/config.py
+src/anvil.egg-info/PKG-INFO
+src/anvil.egg-info/SOURCES.txt
+src/anvil.egg-info/dependency_links.txt
+src/anvil.egg-info/requires.txt
+src/anvil.egg-info/top_level.txt
+src/anvil/generator/distributions.py
+src/anvil/generator/event_builder.py
+src/anvil/generator/showcase.py
+src/anvil/utils/output_formatter.py
+tests/test_generator.py

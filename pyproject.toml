@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anvil"
+version = "1.0.0"
+description = "Anvil Fraud Detection Synthetic Event Generator"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "python-dotenv>=1.0.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
