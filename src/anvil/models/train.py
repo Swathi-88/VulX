@@ -54,13 +54,13 @@ def train_and_evaluate(events_csv="events.csv", model_path="model.pkl", metrics_
     cm = confusion_matrix(y_test, y_pred).tolist()
 
     metrics = {
-        "precision": float(round(prec, 4)),
-        "recall": float(round(rec, 4)),
-        "f1_score": float(round(f1, 4)),
-        "auc_roc": float(round(auc, 4)),
+        "precision": round(float(prec), 4),
+        "recall": round(float(rec), 4),
+        "f1_score": round(float(f1), 4),
+        "auc_roc": round(float(auc), 4),
         "confusion_matrix": cm,
         "test_samples": len(y_test),
-        "test_fraud_count": int(sum(y_test)),
+        "test_fraud_count": sum(y_test),
     }
 
     # Save primary model
@@ -79,9 +79,11 @@ def train_and_evaluate(events_csv="events.csv", model_path="model.pkl", metrics_
 
     for i in range(5):
         seed = 42 + (i + 1) * 10
-        X_resampled, y_resampled = resample(
+        res = resample(
             X_train, y_train, replace=True, random_state=seed
         )
+        assert res is not None
+        X_resampled, y_resampled = res
 
         ens_model = xgb.XGBClassifier(
             n_estimators=100,

@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 # Add src/ directory to sys.path
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from anvil.config import (
     DEFAULT_OUTPUT_CSV,

@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 # Add src/ directory to sys.path
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from anvil.config import DEFAULT_N_EVENTS, DEFAULT_SEED, DEFAULT_OUTPUT_CSV, DEFAULT_DEMO_JSON
 from anvil.generator.event_builder import generate_dataset

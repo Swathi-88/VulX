@@ -16,6 +16,29 @@ ENV/
 env.bak/
 venv.bak/
 
+# Package build & distribution artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+.tox/
+
+# SQLite databases & runtime storage
+*.db
+*.sqlite
+*.sqlite3
+data/processed/*.db
+
+# Generated data output files (optional ignore)
+# data/raw/*.csv
+# events.csv
+
 # IDE & Editor settings
 .vscode/
 .idea/
@@ -25,6 +48,3 @@ venv.bak/
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Anvil dataset output files (optional ignore)
-# events.csv

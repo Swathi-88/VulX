@@ -13,8 +13,8 @@ from anvil.models.preprocessor import preprocess_features
 # Apply monkeypatch for XGBoost 3.x + SHAP 0.49 base_score UBJSON string compatibility
 _orig_decode_ubjson = _shap_tree.decode_ubjson_buffer
 
-def _patched_decode_ubjson(buffer):
-    res = _orig_decode_ubjson(buffer)
+def _patched_decode_ubjson(fp):
+    res = _orig_decode_ubjson(fp)
     try:
         if isinstance(res, dict) and "learner" in res:
             p = res["learner"].get("learner_model_param", {})
@@ -60,7 +60,13 @@ def load_models(model_path=None, ensemble_dir=None):
     return _PRIMARY_MODEL, _ENSEMBLE_MODELS, _SHAP_EXPLAINER
 
 
-def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None) -> dict:
+DEFAULT_FEATURE_TAGS = {
+    "merchant_history_score": ["cross_merchant_derived"],
+    "ip_reputation_score": ["cross_merchant_derived"],
+}
+
+
+def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None, feature_tags=None) -> dict:
     """
     Computes standard decision contract for a transaction event:
       - Risk probability via primary XGBoost model
@@ -96,6 +102,7 @@ def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None)
         uncertainty_level = "high"
 
     # 3. Real SHAP Feature Contributions using shap_values
+    assert explainer is not None
     raw_shap = explainer.shap_values(X)
 
     # Handle shape formats across SHAP versions (list for binary, or 2D array)
@@ -113,8 +120,19 @@ def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None)
 
     # Sort by absolute SHAP contribution descending
     shap_pairs.sort(key=lambda item: abs(item[1]), reverse=True)
+
+    merged_tags = DEFAULT_FEATURE_TAGS.copy()
+    if feature_tags:
+        merged_tags.update(feature_tags)
+    if isinstance(transaction, dict) and "feature_tags" in transaction and isinstance(transaction["feature_tags"], dict):
+        merged_tags.update(transaction["feature_tags"])
+
     top_3_signals = [
-        {"feature": name, "contribution": float(round(contrib, 4))}
+        {
+            "feature": name,
+            "contribution": float(round(contrib, 4)),
+            "tags": list(merged_tags.get(name, [])),
+        }
         for name, contrib in shap_pairs[:3]
     ]
 
@@ -129,9 +147,11 @@ def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None)
     # 5. Standard Decision Contract
     contract = {
         "transaction_id": transaction.get("transaction_id", "unknown_id"),
-        "risk_probability": float(round(risk_prob, 4)),
+        "amount": float(transaction.get("amount", 0.0)),
+        "customer_tenure_days": int(transaction.get("customer_tenure_days", 0)),
+        "risk_probability": round(risk_prob, 4),
         "prediction_uncertainty": {
-            "std_dev": float(round(std_dev, 4)),
+            "std_dev": round(std_dev, 4),
             "uncertainty_level": uncertainty_level,
         },
         "top_contributing_signals": top_3_signals,

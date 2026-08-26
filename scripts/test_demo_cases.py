@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 # Add src/ directory to sys.path
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from anvil.config import DEFAULT_DEMO_JSON
 from anvil.models.decision_contract import get_decision_contract

@@ -1,0 +1,101 @@
+# Anvil Policy Engine Rules Configuration (policies.yaml)
+# Dynamic policy-as-code configuration for fraud routing decisions
+
+severity_tiers:
+  low_max: 1000.0
+  medium_max: 10000.0
+  # Transactions > medium_max are classified as 'high' severity
+
+false_positive_cost_table:
+  tenure_buckets:
+    short_max_days: 30
+    medium_max_days: 365
+    # Customer tenure > medium_max_days is classified as 'long'
+  matrix:
+    long:
+      high: high
+      medium: medium
+      low: low
+    medium:
+      high: medium
+      medium: medium
+      low: low
+    short:
+      high: medium
+      medium: low
+      low: low
+
+reversibility_rules:
+  reversible_actions:
+    - REVIEW
+    - BLOCK
+  irreversible_actions:
+    - PERMANENT_SUSPEND
+    - HARD_BLOCK
+  step_up_verification_available: true
+
+uncertainty_thresholds:
+  std_dev_thresholds:
+    low_max: 0.05
+    medium_max: 0.15
+  distance_from_0_5_thresholds:
+    high_min: 0.35
+    medium_min: 0.15
+  confidence_matrix:
+    low:
+      high: high
+      medium: high
+      low: medium
+    medium:
+      high: medium
+      medium: medium
+      low: low
+    high:
+      high: medium
+      medium: low
+      low: low
+
+purpose_constraint_rules:
+  restricted_tags:
+    - cross_merchant_derived
+  cross_merchant_features:
+    - merchant_history_score
+  enforce_minimum_action: VERIFY
+  disallow_actions:
+    - BLOCK
+
+routing_rules:
+  - name: "Rule 1: High FP cost protection for reversible actions"
+    condition: "fp_cost == 'high' and is_reversible and confidence != 'high'"
+    decision: "VERIFY"
+    rationale: "final: VERIFY because high FP cost + reversible + not high confidence"
+
+  - name: "Rule 2: High FP cost with high confidence review"
+    condition: "fp_cost == 'high' and is_reversible and confidence == 'high'"
+    decision: "HUMAN_REVIEW"
+    rationale: "final: HUMAN_REVIEW because high FP cost + reversible + high confidence"
+
+  - name: "Rule 3: Elevated risk with medium or low FP cost"
+    condition: "naive_recommended_action == 'BLOCK' and fp_cost != 'high'"
+    decision: "HUMAN_REVIEW"
+    rationale: "final: HUMAN_REVIEW because high risk probability with low/medium FP cost profile"
+
+  - name: "Rule 4: Purpose constraint minimum action requirement"
+    condition: "purpose_constraint_triggered and naive_recommended_action == 'ALLOW'"
+    decision: "VERIFY"
+    rationale: "final: VERIFY because purpose constraint triggered (cross-merchant signal): minimum action VERIFY required"
+
+  - name: "Rule 5: Irreversible action safety fallback"
+    condition: "not is_reversible"
+    decision: "HUMAN_REVIEW"
+    rationale: "final: HUMAN_REVIEW because action is irreversible and requires manual review"
+
+  - name: "Rule 6: Borderline risk human review"
+    condition: "naive_recommended_action == 'REVIEW' or risk_probability >= 0.30"
+    decision: "HUMAN_REVIEW"
+    rationale: "final: HUMAN_REVIEW because risk probability is in review range"
+
+  - name: "Rule 7: Low risk default allow"
+    condition: "True"
+    decision: "ALLOW"
+    rationale: "final: ALLOW because low risk probability and low FP cost impact"
