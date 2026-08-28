@@ -13,6 +13,7 @@ from anvil.models.preprocessor import preprocess_features
 # Apply monkeypatch for XGBoost 3.x + SHAP 0.49 base_score UBJSON string compatibility
 _orig_decode_ubjson = _shap_tree.decode_ubjson_buffer
 
+
 def _patched_decode_ubjson(fp):
     res = _orig_decode_ubjson(fp)
     try:
@@ -23,6 +24,7 @@ def _patched_decode_ubjson(fp):
     except Exception:
         pass
     return res
+
 
 _shap_tree.decode_ubjson_buffer = _patched_decode_ubjson
 
@@ -43,7 +45,9 @@ def load_models(model_path=None, ensemble_dir=None):
 
     if _PRIMARY_MODEL is None:
         if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Primary model file '{model_path}' not found. Please run train_model.py first.")
+            raise FileNotFoundError(
+                f"Primary model file '{model_path}' not found. Please run train_model.py first."
+            )
         with open(model_path, "rb") as f:
             _PRIMARY_MODEL = pickle.load(f)
         _SHAP_EXPLAINER = shap.TreeExplainer(_PRIMARY_MODEL)
@@ -66,22 +70,15 @@ DEFAULT_FEATURE_TAGS = {
 }
 
 
-def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None, feature_tags=None) -> dict:
+def get_fast_decision(transaction: dict, model_path=None, ensemble_dir=None) -> dict:
     """
-    Computes standard decision contract for a transaction event:
-      - Risk probability via primary XGBoost model
-      - Prediction uncertainty via standard deviation of 5 bootstrap ensemble models
-      - Top 3 SHAP feature contributions
+    Fast decision contract path (sub-millisecond):
+      - Primary risk probability via XGBoost classifier
+      - Prediction uncertainty via 5 bootstrap ensemble models
       - Naive recommended action (BLOCK / REVIEW / ALLOW)
+    Does NOT calculate SHAP values on the fast path.
     """
-    if model_path is None:
-        model_path = DEFAULT_MODEL_PATH
-    if ensemble_dir is None:
-        ensemble_dir = DEFAULT_ENSEMBLE_DIR
-
-    model, ensemble_models, explainer = load_models(model_path, ensemble_dir)
-
-    # Preprocess transaction into 1-row DataFrame X
+    model, ensemble_models, _ = load_models(model_path, ensemble_dir)
     X = preprocess_features(transaction)
 
     # 1. Primary Risk Probability
@@ -101,11 +98,41 @@ def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None,
     else:
         uncertainty_level = "high"
 
-    # 3. Real SHAP Feature Contributions using shap_values
+    # 3. Naive Recommended Action Thresholds
+    if risk_prob > 0.7:
+        action = "BLOCK"
+    elif risk_prob < 0.3:
+        action = "ALLOW"
+    else:
+        action = "REVIEW"
+
+    # Fast Decision Contract Payload
+    return {
+        "transaction_id": transaction.get("transaction_id", "unknown_id"),
+        "amount": float(transaction.get("amount", 0.0)),
+        "customer_tenure_days": int(transaction.get("customer_tenure_days", 0)),
+        "risk_probability": round(risk_prob, 4),
+        "prediction_uncertainty": {
+            "std_dev": round(std_dev, 4),
+            "uncertainty_level": uncertainty_level,
+        },
+        "top_contributing_signals": [],
+        "naive_recommended_action": action,
+    }
+
+
+def get_explanation(transaction: dict, model_path=None, feature_tags=None) -> list:
+    """
+    Computes real SHAP feature contributions (decoupled explanation path):
+      - Calculates TreeExplainer SHAP values for 1-row transaction feature vector.
+      - Sorts top 3 contributing signals and attaches feature tags.
+    """
+    _, _, explainer = load_models(model_path)
+    X = preprocess_features(transaction)
+
     assert explainer is not None
     raw_shap = explainer.shap_values(X)
 
-    # Handle shape formats across SHAP versions (list for binary, or 2D array)
     if isinstance(raw_shap, list):
         vals = raw_shap[1][0]
     elif len(raw_shap.shape) == 3:  # (1, n_features, 2)
@@ -117,8 +144,6 @@ def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None,
 
     feature_names = list(X.columns)
     shap_pairs = list(zip(feature_names, vals))
-
-    # Sort by absolute SHAP contribution descending
     shap_pairs.sort(key=lambda item: abs(item[1]), reverse=True)
 
     merged_tags = DEFAULT_FEATURE_TAGS.copy()
@@ -136,26 +161,16 @@ def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None,
         for name, contrib in shap_pairs[:3]
     ]
 
-    # 4. Naive Recommended Action Thresholds
-    if risk_prob > 0.7:
-        action = "BLOCK"
-    elif risk_prob < 0.3:
-        action = "ALLOW"
-    else:
-        action = "REVIEW"
+    return top_3_signals
 
-    # 5. Standard Decision Contract
-    contract = {
-        "transaction_id": transaction.get("transaction_id", "unknown_id"),
-        "amount": float(transaction.get("amount", 0.0)),
-        "customer_tenure_days": int(transaction.get("customer_tenure_days", 0)),
-        "risk_probability": round(risk_prob, 4),
-        "prediction_uncertainty": {
-            "std_dev": round(std_dev, 4),
-            "uncertainty_level": uncertainty_level,
-        },
-        "top_contributing_signals": top_3_signals,
-        "naive_recommended_action": action,
-    }
 
+def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None, feature_tags=None) -> dict:
+    """
+    Computes standard decision contract combining fast decision path and SHAP explainability.
+    """
+    contract = get_fast_decision(transaction, model_path, ensemble_dir)
+    signals = get_explanation(transaction, model_path, feature_tags)
+
+    # Attach signals to fast contract if merchant history or ip reputation triggers cross-merchant tagging
+    contract["top_contributing_signals"] = signals
     return contract

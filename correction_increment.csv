@@ -1,0 +1,8 @@
+amount,device_novelty,transaction_velocity,location_deviation,merchant_history_score,customer_tenure_days,payment_method,ip_reputation_score,ground_truth_label
+2100.0,0.82,1,0.12,0.04,210,card,0.75,legitimate
+1217.46,0.0527,1,0.7784,0.1591,177,card,0.5536,fraud
+3812.68,0.0824,1,0.1987,0.551,695,UPI,0.9198,fraud
+500.0,0.8523,4,0.7388,0.2092,27,UPI,0.3983,legitimate
+1217.46,0.0527,1,0.7784,0.1591,177,card,0.5536,fraud
+3812.68,0.0824,1,0.1987,0.551,695,UPI,0.9198,fraud
+500.0,0.8523,4,0.7388,0.2092,27,UPI,0.3983,legitimate

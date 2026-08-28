@@ -1,0 +1,35 @@
+{
+  "baseline_model": {
+    "precision": 0.7284,
+    "recall": 0.8551,
+    "f1_score": 0.7867,
+    "auc_roc": 0.9711,
+    "confusion_matrix": [
+      [
+        309,
+        22
+      ],
+      [
+        10,
+        59
+      ]
+    ],
+    "test_samples": 400,
+    "test_fraud_count": 69,
+    "false_positive_rate": 0.0665
+  },
+  "retrained_model": {
+    "precision": 0.7179,
+    "recall": 0.8116,
+    "f1_score": 0.7619,
+    "false_positive_rate": 0.0665
+  },
+  "feedback_samples_added": 1,
+  "test_set_size": 400,
+  "delta": {
+    "precision": -0.0105,
+    "recall": -0.0435,
+    "f1_score": -0.0248,
+    "false_positive_rate": 0.0
+  }
+}

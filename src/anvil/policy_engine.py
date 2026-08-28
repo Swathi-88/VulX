@@ -4,11 +4,12 @@ Policy-as-code routing engine that evaluates standard decision contracts against
 """
 
 import os
+from typing import Optional, Dict, Any
 import yaml
 from anvil.config import DEFAULT_POLICIES_PATH
 
 
-def load_policies(policy_path: str = None) -> dict:
+def load_policies(policy_path: Optional[str] = None) -> dict:
     """
     Loads policies configuration from YAML file.
     Pulls from DEFAULT_POLICIES_PATH if policy_path is None.
@@ -25,7 +26,11 @@ def load_policies(policy_path: str = None) -> dict:
     return policies
 
 
-def evaluate(decision_contract: dict, policy_path: str = None) -> dict:
+def evaluate(
+    decision_contract: dict,
+    policy_path: Optional[str] = None,
+    policies_dict: Optional[dict] = None,
+) -> dict:
     """
     Evaluates a Standard Decision Contract against policies.yaml rules.
     Runs 6 checks in order:
@@ -35,15 +40,16 @@ def evaluate(decision_contract: dict, policy_path: str = None) -> dict:
       4. Reversibility evaluation
       5. Uncertainty & confidence mapping
       6. Routing rules decision table (top-to-bottom)
-
-    Returns:
-      {
-        "transaction_id": str,
-        "routing_decision": "ALLOW" | "VERIFY" | "HUMAN_REVIEW",
-        "rationale_trace": [list of strings, one per rule/check]
-      }
     """
-    policies = load_policies(policy_path)
+    if policies_dict is not None:
+        policies = policies_dict
+    elif isinstance(policy_path, dict):
+        policies = policy_path
+    elif policy_path is not None:
+        policies = load_policies(str(policy_path))
+    else:
+        policies = load_policies()
+
     rationale_trace = []
 
     # -------------------------------------------------------------
@@ -86,11 +92,11 @@ def evaluate(decision_contract: dict, policy_path: str = None) -> dict:
     low_max = float(sev_rules.get("low_max", 1000.0))
     medium_max = float(sev_rules.get("medium_max", 10000.0))
 
-    amount = float(
-        decision_contract.get(
-            "amount", decision_contract.get("transaction", {}).get("amount", 0.0)
-        )
-    )
+    raw_amount = decision_contract.get("amount")
+    if raw_amount is None:
+        tx_obj = decision_contract.get("transaction")
+        raw_amount = tx_obj.get("amount") if isinstance(tx_obj, dict) else 0.0
+    amount = float(raw_amount) if raw_amount is not None else 0.0
 
     if amount < low_max:
         severity = "low"
@@ -113,12 +119,11 @@ def evaluate(decision_contract: dict, policy_path: str = None) -> dict:
     medium_max_days = int(tenure_cfg.get("medium_max_days", 365))
     fp_matrix = fp_rules.get("matrix", {})
 
-    customer_tenure_days = int(
-        decision_contract.get(
-            "customer_tenure_days",
-            decision_contract.get("transaction", {}).get("customer_tenure_days", 0),
-        )
-    )
+    raw_tenure = decision_contract.get("customer_tenure_days")
+    if raw_tenure is None:
+        tx_obj = decision_contract.get("transaction")
+        raw_tenure = tx_obj.get("customer_tenure_days") if isinstance(tx_obj, dict) else 0
+    customer_tenure_days = int(raw_tenure) if raw_tenure is not None else 0
 
     if customer_tenure_days <= short_max_days:
         tenure_bucket = "short"

@@ -1,0 +1,2 @@
+amount,device_novelty,transaction_velocity,location_deviation,merchant_history_score,customer_tenure_days,payment_method,ip_reputation_score,ground_truth_label
+2100.0,0.82,1,0.12,0.04,210,card,0.75,legitimate
