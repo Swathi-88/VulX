@@ -27,6 +27,7 @@ false_positive_cost_table:
 
 reversibility_rules:
   reversible_actions:
+    - ALLOW
     - REVIEW
     - BLOCK
   irreversible_actions:

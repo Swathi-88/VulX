@@ -144,12 +144,18 @@ def evaluate(
     # 4. Reversibility Check
     # -------------------------------------------------------------
     rev_rules = policies.get("reversibility_rules", {})
-    reversible_actions = rev_rules.get("reversible_actions", ["REVIEW", "BLOCK"])
+    reversible_actions = rev_rules.get("reversible_actions", ["ALLOW", "REVIEW", "BLOCK"])
+    irreversible_actions = rev_rules.get("irreversible_actions", ["PERMANENT_SUSPEND", "HARD_BLOCK"])
     step_up_avail = rev_rules.get("step_up_verification_available", True)
 
     naive_action = decision_contract.get("naive_recommended_action", "ALLOW")
 
-    if naive_action in reversible_actions:
+    if naive_action in irreversible_actions:
+        is_reversible = False
+        rationale_trace.append(
+            f"reversibility=irreversible because naive_action={naive_action} is listed as irreversible"
+        )
+    else:
         is_reversible = True
         step_up_str = (
             " (step-up verification path available)"
@@ -157,12 +163,7 @@ def evaluate(
             else ""
         )
         rationale_trace.append(
-            f"reversibility=reversible because naive_action={naive_action} is listed as reversible{step_up_str}"
-        )
-    else:
-        is_reversible = False
-        rationale_trace.append(
-            f"reversibility=irreversible because naive_action={naive_action} is non-reversible"
+            f"reversibility=reversible because naive_action={naive_action} is reversible{step_up_str}"
         )
 
     # -------------------------------------------------------------
