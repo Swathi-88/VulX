@@ -4,14 +4,15 @@ Simulates verification step-up, human analyst review, and payment completion/blo
 """
 
 import random
+from typing import Optional
 
 
 def execute(
     routing_decision: str,
     transaction: dict,
     success_prob: float = 0.85,
-    analyst_override: str = None,
-    seed: int = None,
+    analyst_override: Optional[str] = None,
+    seed: Optional[int] = None,
 ) -> dict:
     """
     Executes a routing decision (ALLOW, VERIFY, HUMAN_REVIEW) on a transaction.
@@ -36,7 +37,7 @@ def execute(
     else:
         rng = random.Random()
 
-    decision = str(routing_decision).upper().strip()
+    decision = routing_decision.upper().strip()
 
     if decision == "ALLOW":
         return {
@@ -55,7 +56,6 @@ def execute(
         else:
             outcome = "FAILED"
             final = "blocked"
-
         return {
             "action_taken": "VERIFY",
             "verification_outcome": outcome,
@@ -65,7 +65,7 @@ def execute(
 
     elif decision == "HUMAN_REVIEW":
         if analyst_override is not None:
-            override_clean = str(analyst_override).upper().strip()
+            override_clean = analyst_override.upper().strip()
             if override_clean in ["APPROVE", "APPROVED", "ALLOW", "PASS"]:
                 hr_outcome = "APPROVED"
                 final = "completed"
@@ -74,12 +74,10 @@ def execute(
                 final = "blocked"
         else:
             # Automated fallback analyst heuristic (risk_probability < 0.6 -> approve, else block)
-            risk_prob = float(
-                transaction.get(
-                    "risk_probability",
-                    transaction.get("risk_score", 0.5),
-                )
-            )
+            raw_risk = transaction.get("risk_probability")
+            if raw_risk is None:
+                raw_risk = transaction.get("risk_score", 0.5)
+            risk_prob = float(raw_risk) if raw_risk is not None else 0.5
             if risk_prob < 0.60:
                 hr_outcome = "APPROVED"
                 final = "completed"

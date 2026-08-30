@@ -55,9 +55,9 @@ def compute_correctness(final_outcome: str, ground_truth_label: str) -> str:
       - TN = completed and truly legitimate
       - FN = completed and truly fraud
     """
-    gt_clean = str(ground_truth_label).lower().strip()
+    gt_clean = ground_truth_label.lower().strip()
     is_fraud = gt_clean in ["fraud", "suspicious", "true"]
-    is_blocked = str(final_outcome).lower().strip() == "blocked"
+    is_blocked = final_outcome.lower().strip() == "blocked"
 
     if is_blocked and is_fraud:
         return "TP"
@@ -96,7 +96,7 @@ def compute_retention_class(final_outcome: str) -> str:
     """
     Tags retention_class as 'financial_record_required' if payment completed, else 'short_term_ops'.
     """
-    if str(final_outcome).lower().strip() == "completed":
+    if final_outcome.lower().strip() == "completed":
         return "financial_record_required"
     return "short_term_ops"
 

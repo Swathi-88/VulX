@@ -69,8 +69,11 @@ def retrain_and_compare(
         }
 
     if "false_positive_rate" not in baseline_metrics:
-        cm_orig = baseline_metrics.get("confusion_matrix", [[309, 22], [10, 59]])
-        tn, fp = cm_orig[0][0], cm_orig[0][1]
+        cm_orig = baseline_metrics.get("confusion_matrix")
+        if isinstance(cm_orig, list) and len(cm_orig) >= 2:
+            tn, fp = cm_orig[0][0], cm_orig[0][1]
+        else:
+            tn, fp = 309, 22
         baseline_metrics["false_positive_rate"] = round(float(fp / (fp + tn)) if (fp + tn) > 0 else 0.0, 4)
 
     # 2. Augment training set with correction_increment.csv

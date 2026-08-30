@@ -46,7 +46,7 @@ def evaluate(
     elif isinstance(policy_path, dict):
         policies = policy_path
     elif policy_path is not None:
-        policies = load_policies(str(policy_path))
+        policies = load_policies(policy_path)
     else:
         policies = load_policies()
 
