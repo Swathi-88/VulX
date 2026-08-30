@@ -1,19 +1,19 @@
 """
-Anvil System Metrics Dashboard (metrics_dashboard.py)
+VulX System Metrics Dashboard (metrics_dashboard.py)
 
 Queries SQLite ledger to calculate system-wide routing distributions, step-up verification metrics,
-human review exception lists, and side-by-side comparison between the Naive ML baseline vs the Anvil-governed system.
+human review exception lists, and side-by-side comparison between the Naive ML baseline vs the VulX-governed system.
 """
 
 import json
 import os
 import sys
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
-from anvil.config import DEFAULT_DEMO_JSON
-from anvil.ledger import query_ledger, record_event
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate
-from anvil.execution_engine import execute
+from vulx.config import DEFAULT_DEMO_JSON
+from vulx.ledger import query_ledger, record_event
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate
+from vulx.execution_engine import execute
 
 
 def run_metrics_dashboard(db_path=None) -> dict:
@@ -42,7 +42,7 @@ def run_metrics_dashboard(db_path=None) -> dict:
             "verify_analysis": {"total": 0, "fps_saved": 0, "true_fraud": 0},
             "human_review_analysis": {"total": 0, "overrides": 0, "rubberstamped": 0},
             "naive_baseline": {"precision": 0.0, "recall": 0.0, "f1_score": 0.0, "fpr": 0.0},
-            "anvil_system": {"precision": 0.0, "recall": 0.0, "f1_score": 0.0, "fpr": 0.0},
+            "vulx_system": {"precision": 0.0, "recall": 0.0, "f1_score": 0.0, "fpr": 0.0},
         }
 
     # 1. Routing Decision Distribution
@@ -67,10 +67,10 @@ def run_metrics_dashboard(db_path=None) -> dict:
     hr_overrides = sum(1 for ev in hr_events if ev.get("human_review_outcome") is not None)
     hr_rubberstamped = hr_total - hr_overrides
 
-    # 4. Naive Baseline vs Governed Anvil System Performance Metrics
+    # 4. Naive Baseline vs Governed VulX System Performance Metrics
     y_true = []
     y_pred_naive = []
-    y_pred_anvil = []
+    y_pred_vulx = []
 
     for ev in events:
         gt = str(ev.get("ground_truth_label")).lower().strip()
@@ -81,7 +81,7 @@ def run_metrics_dashboard(db_path=None) -> dict:
         y_pred_naive.append(1 if naive_action == "BLOCK" else 0)
 
         final_outcome = str(ev.get("final_outcome")).lower().strip()
-        y_pred_anvil.append(1 if final_outcome == "blocked" else 0)
+        y_pred_vulx.append(1 if final_outcome == "blocked" else 0)
 
     # Calculate Naive Baseline Metrics
     cm_naive = confusion_matrix(y_true, y_pred_naive, labels=[0, 1])
@@ -91,16 +91,16 @@ def run_metrics_dashboard(db_path=None) -> dict:
     f1_naive = float(f1_score(y_true, y_pred_naive, zero_division=0))
     fpr_naive = float(fp_n / (fp_n + tn_n)) if (fp_n + tn_n) > 0 else 0.0
 
-    # Calculate Anvil Governed System Metrics
-    cm_anvil = confusion_matrix(y_true, y_pred_anvil, labels=[0, 1])
-    tn_a, fp_a, fn_a, tp_a = cm_anvil.ravel()
-    prec_anvil = float(precision_score(y_true, y_pred_anvil, zero_division=0))
-    rec_anvil = float(recall_score(y_true, y_pred_anvil, zero_division=0))
-    f1_anvil = float(f1_score(y_true, y_pred_anvil, zero_division=0))
-    fpr_anvil = float(fp_a / (fp_a + tn_a)) if (fp_a + tn_a) > 0 else 0.0
+    # Calculate VulX Governed System Metrics
+    cm_vulx = confusion_matrix(y_true, y_pred_vulx, labels=[0, 1])
+    tn_a, fp_a, fn_a, tp_a = cm_vulx.ravel()
+    prec_vulx = float(precision_score(y_true, y_pred_vulx, zero_division=0))
+    rec_vulx = float(recall_score(y_true, y_pred_vulx, zero_division=0))
+    f1_vulx = float(f1_score(y_true, y_pred_vulx, zero_division=0))
+    fpr_vulx = float(fp_a / (fp_a + tn_a)) if (fp_a + tn_a) > 0 else 0.0
 
     print("=" * 80)
-    print(" ANVIL SYSTEM-WIDE GOVERNANCE & PERFORMANCE METRICS DASHBOARD")
+    print(" VULX SYSTEM-WIDE GOVERNANCE & PERFORMANCE METRICS DASHBOARD")
     print("=" * 80)
     print(f"\n[1] SYSTEM ROUTING DISTRIBUTION (Total Processed: {total_events})")
     for route in ["ALLOW", "VERIFY", "HUMAN_REVIEW"]:
@@ -119,16 +119,16 @@ def run_metrics_dashboard(db_path=None) -> dict:
     print(f"    - Heuristic Rubber-Stamped:   {hr_rubberstamped}")
 
     print("\n" + "-" * 80)
-    print("[4] FULL ANVIL SYSTEM vs NAIVE ML MODEL BASELINE COMPARISON")
+    print("[4] FULL VULX SYSTEM vs NAIVE ML MODEL BASELINE COMPARISON")
     print("-" * 80)
-    print(f"{'Metric':<28} | {'Naive Model Baseline':<20} | {'Anvil Governed System':<20} | {'Impact'}")
+    print(f"{'Metric':<28} | {'Naive Model Baseline':<20} | {'VulX Governed System':<20} | {'Impact'}")
     print("-" * 80)
-    print(f"{'Precision':<28} | {prec_naive:<20.4f} | {prec_anvil:<20.4f} | {prec_anvil - prec_naive:+.4f}")
-    print(f"{'Recall':<28} | {rec_naive:<20.4f} | {rec_anvil:<20.4f} | {rec_anvil - rec_naive:+.4f}")
-    print(f"{'F1 Score':<28} | {f1_naive:<20.4f} | {f1_anvil:<20.4f} | {f1_anvil - f1_naive:+.4f}")
-    print(f"{'False Positive Rate (FPR)':<28} | {fpr_naive:<20.4f} | {fpr_anvil:<20.4f} | {fpr_anvil - fpr_naive:+.4f}")
+    print(f"{'Precision':<28} | {prec_naive:<20.4f} | {prec_vulx:<20.4f} | {prec_vulx - prec_naive:+.4f}")
+    print(f"{'Recall':<28} | {rec_naive:<20.4f} | {rec_vulx:<20.4f} | {rec_vulx - rec_naive:+.4f}")
+    print(f"{'F1 Score':<28} | {f1_naive:<20.4f} | {f1_vulx:<20.4f} | {f1_vulx - f1_naive:+.4f}")
+    print(f"{'False Positive Rate (FPR)':<28} | {fpr_naive:<20.4f} | {fpr_vulx:<20.4f} | {fpr_vulx - fpr_naive:+.4f}")
     print("-" * 80)
-    print("  --> Key Takeaway: Anvil Policy Engine dramatically reduces False Positives (FPR)")
+    print("  --> Key Takeaway: VulX Policy Engine dramatically reduces False Positives (FPR)")
     print("      by routing high-value edge cases to VERIFY step-up rather than naive auto-BLOCK!")
     print("=" * 80 + "\n")
 
@@ -138,7 +138,7 @@ def run_metrics_dashboard(db_path=None) -> dict:
         "verify_analysis": {"total": verify_total, "fps_saved": verify_fps_saved, "true_fraud": verify_true_fraud},
         "human_review_analysis": {"total": hr_total, "overrides": hr_overrides, "rubberstamped": hr_rubberstamped},
         "naive_baseline": {"precision": prec_naive, "recall": rec_naive, "f1_score": f1_naive, "fpr": fpr_naive},
-        "anvil_system": {"precision": prec_anvil, "recall": rec_anvil, "f1_score": f1_anvil, "fpr": fpr_anvil},
+        "vulx_system": {"precision": prec_vulx, "recall": rec_vulx, "f1_score": f1_vulx, "fpr": fpr_vulx},
     }
 
 

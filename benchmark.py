@@ -1,5 +1,5 @@
 """
-Anvil Latency Benchmark Script (benchmark.py)
+VulX Latency Benchmark Script (benchmark.py)
 
 Measures real execution latencies across 100+ transaction evaluation runs:
   - Fast Decision Path (XGBoost + Bootstrap Uncertainty)
@@ -20,11 +20,11 @@ import pandas as pd
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 
-from anvil.config import DEFAULT_OUTPUT_CSV, MODELS_DIR
-from anvil.models.decision_contract import get_fast_decision, get_explanation
-from anvil.policy_engine import evaluate
-from anvil.execution_engine import execute
-from anvil.ledger import record_event
+from vulx.config import DEFAULT_OUTPUT_CSV, MODELS_DIR
+from vulx.models.decision_contract import get_fast_decision, get_explanation
+from vulx.policy_engine import evaluate
+from vulx.execution_engine import execute
+from vulx.ledger import record_event
 
 
 def run_benchmark(n_runs=100, output_json=None):
@@ -32,7 +32,7 @@ def run_benchmark(n_runs=100, output_json=None):
         output_json = str(MODELS_DIR / "benchmark_results.json")
 
     print("=" * 80)
-    print(f" RUNNING ANVIL LATENCY BENCHMARK ({n_runs} RUNS)")
+    print(f" RUNNING VULX LATENCY BENCHMARK ({n_runs} RUNS)")
     print("=" * 80)
 
     # Load dataset sample

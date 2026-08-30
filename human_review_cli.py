@@ -1,5 +1,5 @@
 """
-Anvil Human Review Interactive Analyst CLI (human_review_cli.py)
+VulX Human Review Interactive Analyst CLI (human_review_cli.py)
 
 Interactive command-line tool for human analyst review during live pitches/demos.
 Allows analyst operators to review queued transactions and issue APPROVE or REJECT overrides.
@@ -18,15 +18,15 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-from anvil.config import DEFAULT_DEMO_JSON
-from anvil.execution_engine import execute
-from anvil.ledger import record_event
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate
+from vulx.config import DEFAULT_DEMO_JSON
+from vulx.execution_engine import execute
+from vulx.ledger import record_event
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate
 
 
 def run_cli():
-    parser = argparse.ArgumentParser(description="Anvil Human Analyst Review Console")
+    parser = argparse.ArgumentParser(description="VulX Human Analyst Review Console")
     parser.add_argument(
         "--demo_id",
         type=str,
@@ -66,7 +66,7 @@ def run_cli():
     p_res = evaluate(contract)
 
     print("\n" + "=" * 80)
-    print(" ANVIL HUMAN ANALYST REVIEW QUEUE — LIVE INTERACTIVE CONSOLE")
+    print(" VULX HUMAN ANALYST REVIEW QUEUE — LIVE INTERACTIVE CONSOLE")
     print("=" * 80)
 
     print(f"\n  Transaction ID:           {target_case['transaction_id']}")

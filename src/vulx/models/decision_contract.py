@@ -7,8 +7,8 @@ import pickle
 import numpy as np
 import shap
 import shap.explainers._tree as _shap_tree
-from anvil.config import DEFAULT_MODEL_PATH, DEFAULT_ENSEMBLE_DIR
-from anvil.models.preprocessor import preprocess_features
+from vulx.config import DEFAULT_MODEL_PATH, DEFAULT_ENSEMBLE_DIR
+from vulx.models.preprocessor import preprocess_features
 
 # Apply monkeypatch for XGBoost 3.x + SHAP 0.49 base_score UBJSON string compatibility
 _orig_decode_ubjson = _shap_tree.decode_ubjson_buffer

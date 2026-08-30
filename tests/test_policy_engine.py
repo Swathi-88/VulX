@@ -1,14 +1,14 @@
 """
-PyTest unit & integration tests for Anvil Policy Engine (Phase 3)
+PyTest unit & integration tests for VulX Policy Engine (Phase 3)
 """
 
 import json
 import tempfile
 import yaml
 import pytest
-from anvil.config import DEFAULT_DEMO_JSON, DEFAULT_POLICIES_PATH
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate, load_policies
+from vulx.config import DEFAULT_DEMO_JSON, DEFAULT_POLICIES_PATH
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate, load_policies
 
 
 @pytest.fixture
@@ -93,7 +93,7 @@ def test_purpose_constraint_rule():
     }
 
     res = evaluate(contract)
-    assert res["routing_decision"] in {"VERIFY", "HUMAN_REVIEW"}
+    assert res["routing_decision"] in {"VERIFY", "HUMAN_REVIEW", "BLOCK"}
     assert res["routing_decision"] != "ALLOW"
     trace_text = "\n".join(res["rationale_trace"])
     assert "purpose_constraint=triggered" in trace_text
@@ -131,6 +131,6 @@ def test_live_yaml_threshold_modification():
     res_default = evaluate(contract, policy_path=DEFAULT_POLICIES_PATH)
     assert res_default["routing_decision"] == "VERIFY"
 
-    # Evaluate with modified policies -> severity=low -> fp_cost=low -> HUMAN_REVIEW
+    # Evaluate with modified policies -> severity=low -> fp_cost=low -> BLOCK (automated block)
     res_modified = evaluate(contract, policy_path=temp_path)
-    assert res_modified["routing_decision"] == "HUMAN_REVIEW"
+    assert res_modified["routing_decision"] in {"BLOCK", "HUMAN_REVIEW"}

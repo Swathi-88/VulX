@@ -1,6 +1,6 @@
 # Vulcan Decision Simulator - Model Card
 
-This Model Card details the architecture, feature pipeline, evaluation metrics, explainability mechanisms, and uncertainty estimation methods for the **Vulcan Decision Simulator** (Anvil Phase 2 tabular fraud model).
+This Model Card details the architecture, feature pipeline, evaluation metrics, explainability mechanisms, and uncertainty estimation methods for the **Vulcan Decision Simulator** (VulX Phase 2 tabular fraud model).
 
 ---
 
@@ -112,7 +112,7 @@ The `decision_contract.py` module computes a **Standard Decision Contract** for 
 - **False-Positive Showcase (`demo_fp_001_showcase`)**:
   - Amount: INR 45,000 | Tenure: 400 days | Device Novelty: 0.95 | Velocity: 4
   - **Model Output**: `risk_probability = 0.7818` $\rightarrow$ Naive Action: **`BLOCK`**
-  - *Significance*: Proves Vulcan's tabular model naively flags high-value transactions with new devices despite long customer tenure. This sets up Anvil's Phase 3 intelligent override mechanism.
+  - *Significance*: Proves Vulcan's tabular model naively flags high-value transactions with new devices despite long customer tenure. This sets up VulX's Phase 3 intelligent override mechanism.
 
 - **True-Fraud Counterpart (`demo_fraud_001_counterpart`)**:
   - Amount: INR 48,000 | Tenure: 12 days | Device Novelty: 0.96 | Velocity: 5 | IP Rep: 0.15

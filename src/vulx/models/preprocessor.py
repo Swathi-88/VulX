@@ -1,5 +1,5 @@
 """
-Feature Preprocessor for Vulcan Decision Simulator (Anvil Phase 2)
+Feature Preprocessor for Vulcan Decision Simulator (VulX Phase 2)
 """
 
 import pandas as pd

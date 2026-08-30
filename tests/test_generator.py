@@ -1,12 +1,12 @@
 """
-Unit tests for Anvil synthetic payment event generator package.
+Unit tests for VulX synthetic payment event generator package.
 """
 
 import json
 import pytest
 import pandas as pd
-from anvil.generator.event_builder import generate_dataset, compute_category_counts
-from anvil.generator.showcase import get_showcase_demo_cases
+from vulx.generator.event_builder import generate_dataset, compute_category_counts
+from vulx.generator.showcase import get_showcase_demo_cases
 
 
 def test_category_counts():

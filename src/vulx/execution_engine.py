@@ -1,5 +1,5 @@
 """
-Anvil Execution Engine (Phase 4)
+VulX Execution Engine (Phase 4)
 Simulates verification step-up, human analyst review, and payment completion/blocking.
 """
 

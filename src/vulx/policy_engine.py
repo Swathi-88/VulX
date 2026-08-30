@@ -1,12 +1,12 @@
 """
-Anvil Policy Engine (Phase 3)
+VulX Policy Engine (Phase 3)
 Policy-as-code routing engine that evaluates standard decision contracts against policies.yaml rules.
 """
 
 import os
 from typing import Optional, Dict, Any
 import yaml
-from anvil.config import DEFAULT_POLICIES_PATH
+from vulx.config import DEFAULT_POLICIES_PATH
 
 
 def load_policies(policy_path: Optional[str] = None) -> dict:

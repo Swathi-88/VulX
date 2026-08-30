@@ -4,8 +4,8 @@ PyTest unit test suite for showcase demo cases decision contracts.
 
 import json
 import pytest
-from anvil.config import DEFAULT_DEMO_JSON
-from anvil.models.decision_contract import get_decision_contract
+from vulx.config import DEFAULT_DEMO_JSON
+from vulx.models.decision_contract import get_decision_contract
 
 
 def test_demo_cases_contracts():

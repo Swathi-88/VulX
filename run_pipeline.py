@@ -1,5 +1,5 @@
 """
-Anvil End-to-End Pipeline Demo Script (run_pipeline.py)
+VulX End-to-End Pipeline Demo Script (run_pipeline.py)
 
 Wires together Phase 1 (Data), Phase 2 (Decision Contract), Phase 3 (Policy Engine),
 and Phase 4 (Execution & SQLite Ledger) into a single runnable pipeline.
@@ -17,16 +17,16 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-from anvil.config import DEFAULT_DEMO_JSON
-from anvil.execution_engine import execute
-from anvil.ledger import query_ledger, record_event
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate
+from vulx.config import DEFAULT_DEMO_JSON
+from vulx.execution_engine import execute
+from vulx.ledger import query_ledger, record_event
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate
 
 
 def process_transaction(transaction: dict, seed: int = 42) -> dict:
     """
-    Runs a single transaction event through the complete 4-phase Anvil pipeline.
+    Runs a single transaction event through the complete 4-phase VulX pipeline.
     """
     # Phase 2: Decision Contract & SHAP explainability
     contract = get_decision_contract(transaction)
@@ -61,7 +61,7 @@ def process_transaction(transaction: dict, seed: int = 42) -> dict:
 
 def run_demo_pipeline():
     print("=" * 85)
-    print(" ANVIL INTEGRATED PIPELINE DEMO — PHASES 1 to 4")
+    print(" VULX INTEGRATED PIPELINE DEMO — PHASES 1 to 4")
     print("=" * 85)
 
     if not os.path.exists(DEFAULT_DEMO_JSON):
@@ -90,7 +90,7 @@ def run_demo_pipeline():
     print(f"  [1] Vulcan ML Model says:  {c['risk_probability']*100:.1f}% risk, Naive Action: {c['naive_recommended_action']}")
     print(f"                             Top signals: [{top_sigs_str}]")
 
-    print(f"  [2] Anvil Policy Engine:   Routed to {p['routing_decision']}")
+    print(f"  [2] VulX Policy Engine:   Routed to {p['routing_decision']}")
     print(f"                             Rationale: {p['rationale_trace'][-1]}")
 
     ver_str = f" ({e['verification_outcome']})" if e["verification_outcome"] else ""

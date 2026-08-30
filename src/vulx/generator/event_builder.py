@@ -5,8 +5,8 @@ Core event builder implementing the 6 category feature correlation rules.
 import uuid
 import numpy as np
 import pandas as pd
-from anvil.generator.distributions import generate_timestamps, sample_payment_methods
-from anvil.config import CATEGORY_RATIOS
+from vulx.generator.distributions import generate_timestamps, sample_payment_methods
+from vulx.config import CATEGORY_RATIOS
 
 
 def compute_category_counts(n_events):

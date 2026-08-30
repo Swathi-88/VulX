@@ -1,5 +1,5 @@
 """
-Reproducible showcase test vectors for Anvil rule engines & ML models.
+Reproducible showcase test vectors for VulX rule engines & ML models.
 """
 
 

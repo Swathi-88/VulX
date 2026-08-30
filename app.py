@@ -1,7 +1,7 @@
 """
-Anvil Fraud Detection & Policy Engine — Interactive Streamlit Dashboard (app.py)
+VulX Fraud Detection & Policy Engine — Interactive Streamlit Dashboard (app.py)
 
-Visual pitch & demo interface for Anvil pipeline stages, policy editing, and SQLite ledger.
+Visual pitch & demo interface for VulX pipeline stages, policy editing, and SQLite ledger.
 """
 
 import json
@@ -17,11 +17,11 @@ try:
 except ImportError:
     HAS_STREAMLIT = False
 
-from anvil.config import DEFAULT_DEMO_JSON, DEFAULT_POLICIES_PATH
-from anvil.execution_engine import execute
-from anvil.ledger import query_ledger, record_event
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate, load_policies
+from vulx.config import DEFAULT_DEMO_JSON, DEFAULT_POLICIES_PATH
+from vulx.execution_engine import execute
+from vulx.ledger import query_ledger, record_event
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate, load_policies
 
 
 def run_streamlit_app():
@@ -30,11 +30,11 @@ def run_streamlit_app():
         return
 
     st.set_page_config(
-        page_title="Anvil Fraud Decision & Policy Engine",
+        page_title="VulX Fraud Decision & Policy Engine",
         layout="wide",
     )
 
-    st.title("Anvil: Policy-as-Code Fraud Routing System")
+    st.title("VulX: Policy-as-Code Fraud Routing System")
     st.caption("Standard Decision Contracts • Explainable SHAP Signals • Policy Routing • SQLite Audit Ledger")
 
     tab1, tab2, tab3 = st.tabs(["Live Pipeline Demo", "Policy Config (YAML)", "SQLite Audit Ledger"])
@@ -86,7 +86,7 @@ def run_streamlit_app():
 
             # Stage 2: Policy Routing
             route_color = "green" if policy_res["routing_decision"] == "ALLOW" else ("orange" if policy_res["routing_decision"] == "VERIFY" else "red")
-            st.markdown(f"**2. Anvil Policy Engine:** Routing Decision = **:{route_color}[{policy_res['routing_decision']}]**")
+            st.markdown(f"**2. VulX Policy Engine:** Routing Decision = **:{route_color}[{policy_res['routing_decision']}]**")
             with st.expander("View Policy Rationale Trace", expanded=True):
                 for idx, r in enumerate(policy_res["rationale_trace"], 1):
                     st.write(f"**{idx}.** {r}")

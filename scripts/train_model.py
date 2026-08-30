@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Train Vulcan Fraud Classifier & Bootstrap Ensemble (Anvil Phase 2)
+Train Vulcan Fraud Classifier & Bootstrap Ensemble (VulX Phase 2)
 ------------------------------------------------------------------
 Trains XGBoost model on events.csv, saves primary model to models/model.pkl,
 saves metrics to models/metrics.json, and saves 5 ensemble models to models/model_ensemble/*.pkl.
@@ -12,13 +12,13 @@ from pathlib import Path
 # Add src/ directory to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from anvil.config import (
+from vulx.config import (
     DEFAULT_OUTPUT_CSV,
     DEFAULT_MODEL_PATH,
     DEFAULT_METRICS_PATH,
     DEFAULT_ENSEMBLE_DIR,
 )
-from anvil.models.train import train_and_evaluate
+from vulx.models.train import train_and_evaluate
 
 
 def main():

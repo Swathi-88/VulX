@@ -1,5 +1,5 @@
 """
-Anvil Model Retraining & Performance Comparison Script (retrain_and_compare.py)
+VulX Model Retraining & Performance Comparison Script (retrain_and_compare.py)
 
 Retrains XGBoost classifier on original training set augmented with feedback corrections
 from correction_increment.csv, evaluates on the exact held-out test set, and reports
@@ -13,8 +13,8 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
-from anvil.config import DEFAULT_OUTPUT_CSV, DEFAULT_METRICS_PATH, PROCESSED_DATA_DIR, MODELS_DIR
-from anvil.models.preprocessor import preprocess_features
+from vulx.config import DEFAULT_OUTPUT_CSV, DEFAULT_METRICS_PATH, PROCESSED_DATA_DIR, MODELS_DIR
+from vulx.models.preprocessor import preprocess_features
 from feedback_pipeline import extract_feedback
 
 
@@ -38,7 +38,7 @@ def retrain_and_compare(
         extract_feedback(output_csv=correction_csv)
 
     print("=" * 80)
-    print(" ANVIL MODEL RETRAINING & PERFORMANCE COMPARISON")
+    print(" VULX MODEL RETRAINING & PERFORMANCE COMPARISON")
     print("=" * 80)
 
     # 1. Load original dataset and perform identical 80/20 train/test split

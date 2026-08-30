@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Decision Contract Module for Vulcan Decision Simulator (Anvil Phase 2)
+Decision Contract Module for Vulcan Decision Simulator (VulX Phase 2)
 ---------------------------------------------------------------------
 Exposes get_decision_contract(transaction: dict) -> dict for single transaction evaluation.
 """
@@ -11,8 +11,8 @@ from pathlib import Path
 # Add src/ directory to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from anvil.config import DEFAULT_MODEL_PATH, DEFAULT_ENSEMBLE_DIR
-from anvil.models.decision_contract import get_decision_contract as _get_contract, load_models
+from vulx.config import DEFAULT_MODEL_PATH, DEFAULT_ENSEMBLE_DIR
+from vulx.models.decision_contract import get_decision_contract as _get_contract, load_models
 
 
 def get_decision_contract(transaction: dict, model_path=None, ensemble_dir=None) -> dict:

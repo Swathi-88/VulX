@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Demo Cases Runner for Vulcan Decision Simulator (Anvil Phase 2)
+Test Demo Cases Runner for Vulcan Decision Simulator (VulX Phase 2)
 ---------------------------------------------------------------------
 Loads demo_cases.json, evaluates each case through get_decision_contract,
 prints output contracts, and asserts killer demo false-positive behavior.
@@ -13,8 +13,8 @@ from pathlib import Path
 # Add src/ directory to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from anvil.config import DEFAULT_DEMO_JSON
-from anvil.models.decision_contract import get_decision_contract
+from vulx.config import DEFAULT_DEMO_JSON
+from vulx.models.decision_contract import get_decision_contract
 
 
 def run_demo_case_evaluations(demo_json_path=None):
@@ -67,7 +67,7 @@ def run_demo_case_evaluations(demo_json_path=None):
     )
 
     print("ASSERTION PASSED: The INR 45,000 showcase case produces risk_probability > 0.75 and action 'BLOCK'.")
-    print("This confirms Vulcan naively flags this false-positive case, setting up Anvil's Phase 3 override!\n")
+    print("This confirms Vulcan naively flags this false-positive case, setting up VulX's Phase 3 override!\n")
     return contracts
 
 

@@ -1,5 +1,5 @@
 """
-Terminal output formatters and reporting utilities for Anvil event summary statistics.
+Terminal output formatters and reporting utilities for VulX event summary statistics.
 """
 
 def print_summary_table(df):
@@ -8,7 +8,7 @@ def print_summary_table(df):
     categories = ["normal", "suspicious", "borderline", "fraud", "legitimate_but_unusual", "merchant_anomaly"]
 
     print("\n" + "=" * 80)
-    print(f" ANVIL SYNTHETIC EVENT GENERATION SUMMARY (Total Events: {total_events})")
+    print(f" VULX SYNTHETIC EVENT GENERATION SUMMARY (Total Events: {total_events})")
     print("=" * 80)
 
     header = f"{'Category Tag':<25} | {'Count':<7} | {'Pct':<7} | {'Legitimate':<10} | {'Fraud':<7} | {'Fraud %':<8}"

@@ -1,5 +1,5 @@
 """
-Anvil SQLite Ledger Layer (Phase 4)
+VulX SQLite Ledger Layer (Phase 4)
 Provides persistent audit trails for payment risk decisions, execution outcomes, and compliance tags.
 """
 
@@ -8,7 +8,7 @@ import os
 import sqlite3
 import uuid
 from typing import Dict, List, Optional
-from anvil.config import DEFAULT_LEDGER_DB_PATH
+from vulx.config import DEFAULT_LEDGER_DB_PATH
 
 CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS ledger_events (

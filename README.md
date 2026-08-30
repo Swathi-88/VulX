@@ -1,6 +1,6 @@
-# Anvil — Policy-as-Code Fraud Decision & Governance Engine
+# VulX — Policy-as-Code Fraud Decision & Governance Engine
 
-Anvil is a policy-as-code routing and audit layer for payment fraud detection systems that bridges raw machine learning risk scores and real-world business execution. It takes Standard Decision Contracts containing risk probabilities, prediction uncertainty, and SHAP explainability signals, and evaluates them against human-editable YAML policy rules. By dynamically routing high-risk/high-false-positive transactions to step-up verification (`VERIFY`) or analyst review (`HUMAN_REVIEW`) instead of silent auto-blocking, Anvil prevents costly false positives while maintaining rigorous audit compliance in SQLite.
+VulX is a policy-as-code routing and audit layer for payment fraud detection systems that bridges raw machine learning risk scores and real-world business execution. It takes Standard Decision Contracts containing risk probabilities, prediction uncertainty, and SHAP explainability signals, and evaluates them against human-editable YAML policy rules. By dynamically routing high-risk/high-false-positive transactions to step-up verification (`VERIFY`) or analyst review (`HUMAN_REVIEW`) instead of silent auto-blocking, VulX prevents costly false positives while maintaining rigorous audit compliance in SQLite.
 
 ---
 
@@ -61,7 +61,7 @@ streamlit run app.py
 ├── ledger.py                 # SQLite audit ledger layer & compliance tagging
 ├── feedback_pipeline.py     # Continuous feedback extraction (FP/FN -> correction_increment.csv)
 ├── retrain_and_compare.py    # XGBoost model retraining & before/after performance comparison
-├── metrics_dashboard.py      # System metrics dashboard (Anvil governed system vs raw model)
+├── metrics_dashboard.py      # System metrics dashboard (VulX governed system vs raw model)
 ├── human_review_cli.py       # Interactive analyst CLI console for live pitch demo
 ├── app.py                    # Streamlit visual presentation dashboard
 ├── ARCHITECTURE.md           # System architecture diagram & stage-by-stage documentation
@@ -71,7 +71,7 @@ streamlit run app.py
 │   ├── raw/events.csv        # Raw synthetic payment events dataset (2,000 events)
 │   └── processed/
 │       ├── demo_cases.json   # Fixed showcase demo test vectors (8 cases)
-│       └── anvil_ledger.db   # Persistent SQLite audit ledger database
+│       └── vulx_ledger.db   # Persistent SQLite audit ledger database
 │
 ├── models/
 │   ├── model.pkl             # Trained primary XGBoost classifier

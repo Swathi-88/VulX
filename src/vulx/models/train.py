@@ -12,7 +12,7 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 from sklearn.utils import resample
-from anvil.models.preprocessor import preprocess_features
+from vulx.models.preprocessor import preprocess_features
 
 
 def train_and_evaluate(events_csv="events.csv", model_path="model.pkl", metrics_path="metrics.json", ensemble_dir="model_ensemble"):

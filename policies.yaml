@@ -1,4 +1,4 @@
-# Anvil Policy Engine Rules Configuration (policies.yaml)
+# VulX Policy Engine Rules Configuration (policies.yaml)
 # Dynamic policy-as-code configuration for fraud routing decisions
 
 severity_tiers:

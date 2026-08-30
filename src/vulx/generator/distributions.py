@@ -1,5 +1,5 @@
 """
-Statistical distribution generators for Anvil payment event attributes.
+Statistical distribution generators for VulX payment event attributes.
 """
 
 from datetime import datetime, timedelta

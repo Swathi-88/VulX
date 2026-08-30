@@ -1,7 +1,7 @@
-# Anvil: Policy-as-Code Payment Fraud Routing & Governance Engine
+# VulX: Policy-as-Code Payment Fraud Routing & Governance Engine
 ## End-to-End Technical Workflow & System Architecture
 
-Anvil is a policy-governed payment fraud detection and routing platform. It bridges raw machine learning predictions with business policy rules, explainability signals, dynamic step-up verification, immutable audit logging, continuous feedback loops, and automated model retraining.
+VulX is a policy-governed payment fraud detection and routing platform. It bridges raw machine learning predictions with business policy rules, explainability signals, dynamic step-up verification, immutable audit logging, continuous feedback loops, and automated model retraining.
 
 ---
 
@@ -9,7 +9,7 @@ Anvil is a policy-governed payment fraud detection and routing platform. It brid
 
 Traditional machine learning (ML) models output a single fraud score or binary prediction (`ALLOW` vs `BLOCK`). In high-volume payment processing, hard blocking transactions based solely on probability thresholds leads to **high False Positive Rates (FPR)**, alienating legitimate customers and destroying gross merchandise value (GMV).
 
-**Anvil solves this by decoupling raw ML scores from execution actions**:
+**VulX solves this by decoupling raw ML scores from execution actions**:
 1. **Decision Contracts**: Encapsulate risk probability, SHAP signal attribution, model uncertainty (bootstrap variance), and data provenance.
 2. **Policy-as-Code Engine (`policies.yaml`)**: Applies business governance (customer tenure FP cost, transaction severity, action reversibility, legal purpose constraints) to route transactions dynamically into `ALLOW`, `VERIFY` (step-up authentication), or `HUMAN_REVIEW`.
 3. **Execution Engine**: Simulates step-up authentication (2FA/biometric) and analyst exception management to recover legitimate transactions before blocking.
@@ -27,7 +27,7 @@ Traditional machine learning (ML) models output a single fraud score or binary p
 | **Explainability & Uncertainty** | Model Interpretability | SHAP (TreeExplainer), Bootstrap Ensemble Variance |
 | **Data Processing & Math** | Signal Engineering | Pandas, NumPy, SciPy |
 | **Policy Engine** | Policy-as-Code | PyYAML, Python Dynamic Expression Evaluator |
-| **Audit & Storage** | Persistence & Audit Ledger | SQLite 3 (`anvil_ledger.db`), CSV, JSON |
+| **Audit & Storage** | Persistence & Audit Ledger | SQLite 3 (`vulx_ledger.db`), CSV, JSON |
 | **Visual User Interfaces** | Web Applications & Analytics | Streamlit, Plotly, HTML/CSS |
 | **CLI & Terminal Tools** | Analyst Console | Rich CLI, Argparse |
 | **Testing & Quality** | Test Framework | Pytest |
@@ -48,7 +48,7 @@ flowchart TD
         B2 --> B3["Risk Probability + SHAP Explanations + Uncertainty"]
     end
 
-    subgraph PolicyEng ["3. Anvil Policy Engine"]
+    subgraph PolicyEng ["3. VulX Policy Engine"]
         C1["policies.yaml"] --> C2["Policy Evaluator<br/>(policy_engine.py)"]
         B3 --> C2
         C2 --> C3["Policy Checks:<br/>1. Purpose Constraints<br/>2. Severity Tiers<br/>3. FP Cost Matrix<br/>4. Action Reversibility<br/>5. Uncertainty Mapping<br/>6. Sequential Rules"]
@@ -63,7 +63,7 @@ flowchart TD
     end
 
     subgraph LedgerAudit ["5. SQLite Audit Ledger"]
-        D2 --> E1["SQLite Ledger<br/>(ledger.py / anvil_ledger.db)"]
+        D2 --> E1["SQLite Ledger<br/>(ledger.py / vulx_ledger.db)"]
         D3 --> E1
         D4 --> E1
         E1 --> E2["Immutable Audit Log<br/>(TP/FP/TN/FN Correctness, Legal Basis, Retention)"]
@@ -79,7 +79,7 @@ flowchart TD
     subgraph Presentation ["7. Presentation & Dashboard Layer"]
         E2 --> G1["System Metrics Dashboard<br/>(metrics_dashboard.py)"]
         E2 --> G2["Streamlit Live App<br/>(app.py & dashboard.py)"]
-        G2 --> G3["Tab 1: Live Run & Fast Inference<br/>Tab 2: Compare Naive vs Anvil<br/>Tab 3: Ledger Explorer<br/>Tab 4: Policy Lab (YAML Editor)<br/>Tab 5: Retrain Impact Analytics"]
+        G2 --> G3["Tab 1: Live Run & Fast Inference<br/>Tab 2: Compare Naive vs VulX<br/>Tab 3: Ledger Explorer<br/>Tab 4: Policy Lab (YAML Editor)<br/>Tab 5: Retrain Impact Analytics"]
     end
 
     DataGen --> MLModel
@@ -89,15 +89,15 @@ flowchart TD
 
 ## 4. Detailed Component-by-Component Implementation
 
-### 4.1 Synthetic Event Generator (`src/anvil/generator/`)
-- **[distributions.py](file:///d:/razorpay/src/anvil/generator/distributions.py)**: Defines statistical category distributions (`normal`, `suspicious`, `borderline`, `fraud`, `legitimate_but_unusual`, `merchant_anomaly`) and log-normal transaction amount samplers.
-- **[event_builder.py](file:///d:/razorpay/src/anvil/generator/event_builder.py)**: Synthesizes multi-feature payment vectors containing:
+### 4.1 Synthetic Event Generator (`src/vulx/generator/`)
+- **[distributions.py](file:///d:/razorpay/src/vulx/generator/distributions.py)**: Defines statistical category distributions (`normal`, `suspicious`, `borderline`, `fraud`, `legitimate_but_unusual`, `merchant_anomaly`) and log-normal transaction amount samplers.
+- **[event_builder.py](file:///d:/razorpay/src/vulx/generator/event_builder.py)**: Synthesizes multi-feature payment vectors containing:
   - `amount`, `device_novelty`, `transaction_velocity`, `location_deviation`, `merchant_history_score`, `customer_tenure_days`, `payment_method`, `ip_reputation_score`, `ground_truth_label`.
-- **[showcase.py](file:///d:/razorpay/src/anvil/generator/showcase.py)**: Generates 8 deterministic showcase demo vectors (`demo_cases.json`) representing classic edge cases (e.g. ₹45,000 high-amount purchase by a 400-day tenured customer with device novelty).
+- **[showcase.py](file:///d:/razorpay/src/vulx/generator/showcase.py)**: Generates 8 deterministic showcase demo vectors (`demo_cases.json`) representing classic edge cases (e.g. ₹45,000 high-amount purchase by a 400-day tenured customer with device novelty).
 
-### 4.2 Machine Learning Model & Decision Contract (`src/anvil/models/`)
-- **[train.py](file:///d:/razorpay/src/anvil/models/train.py)**: Trains the primary XGBoost classifier alongside a 5-model bootstrap ensemble to estimate prediction variance. Saves artifacts to `models/xgb_model.pkl` and `models/ensemble/`.
-- **[decision_contract.py](file:///d:/razorpay/src/anvil/models/decision_contract.py)**: Builds a standardized JSON payload for each transaction:
+### 4.2 Machine Learning Model & Decision Contract (`src/vulx/models/`)
+- **[train.py](file:///d:/razorpay/src/vulx/models/train.py)**: Trains the primary XGBoost classifier alongside a 5-model bootstrap ensemble to estimate prediction variance. Saves artifacts to `models/xgb_model.pkl` and `models/ensemble/`.
+- **[decision_contract.py](file:///d:/razorpay/src/vulx/models/decision_contract.py)**: Builds a standardized JSON payload for each transaction:
   ```json
   {
     "transaction_id": "tx_showcase_001",
@@ -111,7 +111,7 @@ flowchart TD
   }
   ```
 
-### 4.3 Policy Engine (`src/anvil/policy_engine.py` & `policies.yaml`)
+### 4.3 Policy Engine (`src/vulx/policy_engine.py` & `policies.yaml`)
 The policy engine evaluates decision contracts against `policies.yaml` through six sequential governance phases:
 1. **Purpose Constraints**: Checks if cross-merchant signals (`merchant_history_score`) were derived under restricted tags (`cross_merchant_derived`). If present, enforces minimum action `VERIFY` and prohibits auto-`BLOCK`.
 2. **Severity Mapping**: Maps transaction amounts to severity tiers (`low` <= ₹1,000, `medium` <= ₹10,000, `high` > ₹10,000).
@@ -128,14 +128,14 @@ The policy engine evaluates decision contracts against `policies.yaml` through s
    - **Rule 6**: Borderline Risk ($\ge 0.30$) $\rightarrow$ `HUMAN_REVIEW`.
    - **Rule 7**: Default Fallback $\rightarrow$ `ALLOW`.
 
-### 4.4 Real-time Execution Engine (`src/anvil/execution_engine.py`)
+### 4.4 Real-time Execution Engine (`src/vulx/execution_engine.py`)
 Executes policy routing decisions:
 - `ALLOW`: Completes transaction immediately (`final_outcome: "completed"`).
 - `VERIFY`: Triggers step-up authentication (2FA/biometric). If verification passes, `final_outcome: "completed"` (recovering a false positive!); if it fails, `final_outcome: "blocked"`.
 - `HUMAN_REVIEW`: Queues for analyst review. Integrates with [human_review_cli.py](file:///d:/razorpay/human_review_cli.py) for live overrides.
 
-### 4.5 SQLite Audit Ledger (`src/anvil/ledger.py`)
-Persists immutable records into `anvil_ledger.db` (`ledger` table). Automatically computes:
+### 4.5 SQLite Audit Ledger (`src/vulx/ledger.py`)
+Persists immutable records into `vulx_ledger.db` (`ledger` table). Automatically computes:
 - **Audit Correctness**: `TP` (True Positive), `FP` (False Positive), `TN` (True Negative), `FN` (False Negative).
 - **Legal Provenance Tag**: `cross_merchant_derived` vs `own_history`.
 - **Financial Retention Class**: `financial_record_required` (7 years) vs `short_term_ops` (90 days).
@@ -145,7 +145,7 @@ Persists immutable records into `anvil_ledger.db` (`ledger` table). Automaticall
 - **[retrain_and_compare.py](file:///d:/razorpay/retrain_and_compare.py)**: Retrains the primary XGBoost model on `events.csv + correction_increment.csv`, evaluates on a held-out benchmark set, and generates side-by-side metric deltas (`retrain_comparison.json`).
 
 ### 4.7 Metrics Dashboard & Visual Interfaces
-- **[metrics_dashboard.py](file:///d:/razorpay/metrics_dashboard.py)**: CLI metric summary reporting routing distribution, false positives prevented, and Naive vs Anvil performance matrices.
+- **[metrics_dashboard.py](file:///d:/razorpay/metrics_dashboard.py)**: CLI metric summary reporting routing distribution, false positives prevented, and Naive vs VulX performance matrices.
 - **[app.py](file:///d:/razorpay/app.py)** & **[dashboard.py](file:///d:/razorpay/dashboard.py)**: Full Streamlit Web Applications offering:
   - Live single/batch transaction execution.
   - Interactive policy configuration editor (`policies.yaml`).

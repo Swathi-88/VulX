@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "anvil"
+name = "vulx"
 version = "1.0.0"
-description = "Anvil Fraud Detection Synthetic Event Generator"
+description = "VulX Fraud Detection Synthetic Event Generator"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [

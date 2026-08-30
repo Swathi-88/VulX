@@ -1,9 +1,9 @@
 """
-Anvil Prototype Live Dashboard (dashboard.py)
+VulX Prototype Live Dashboard (dashboard.py)
 
 Real-time Streamlit application powered by real pipeline files and functions:
   - Tab 1: Live Run (real-time perf_counter deltas, decoupled SHAP explanation bar chart)
-  - Tab 2: Compare: Naive vs Anvil (batch comparison, diverged rows highlighted)
+  - Tab 2: Compare: Naive vs VulX (batch comparison, diverged rows highlighted)
   - Tab 3: Ledger Explorer (live SQLite query_ledger, FP prevented metric, human review load)
   - Tab 4: Policy Lab (interactive in-memory policy slider evaluation)
   - Tab 5: Metrics & Retrain Impact (real metrics.json, retrain_comparison.json, benchmark_results.json)
@@ -23,7 +23,7 @@ import yaml
 # Ensure src is on python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 
-from anvil.config import (
+from vulx.config import (
     DEFAULT_DEMO_JSON,
     DEFAULT_LEDGER_DB_PATH,
     DEFAULT_METRICS_PATH,
@@ -34,18 +34,18 @@ from anvil.config import (
     MODELS_DIR,
     PROCESSED_DATA_DIR,
 )
-from anvil.execution_engine import execute
-from anvil.ledger import query_ledger, record_event
-from anvil.models.decision_contract import (
+from vulx.execution_engine import execute
+from vulx.ledger import query_ledger, record_event
+from vulx.models.decision_contract import (
     get_decision_contract,
     get_explanation,
     get_fast_decision,
     load_models,
 )
-from anvil.policy_engine import evaluate, load_policies
+from vulx.policy_engine import evaluate, load_policies
 
 st.set_page_config(
-    page_title="Anvil Fraud Routing & Governance Engine",
+    page_title="VulX Fraud Routing & Governance Engine",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -89,7 +89,7 @@ cached_load_models()
 # -----------------------------------------------------------------------------
 # Sidebar Status Checklist
 # -----------------------------------------------------------------------------
-st.sidebar.title("Anvil System State")
+st.sidebar.title("VulX System State")
 st.sidebar.caption("Real-Time Artifact Checklist")
 
 events_csv_path = DEFAULT_OUTPUT_CSV if os.path.exists(DEFAULT_OUTPUT_CSV) else "events.csv"
@@ -137,9 +137,9 @@ else:
 # Check SQLite ledger
 ledger_events_check = cached_query_ledger()
 if os.path.exists(ledger_db_path):
-    st.sidebar.success(f"[OK] anvil_ledger.db ({len(ledger_events_check)} events)")
+    st.sidebar.success(f"[OK] vulx_ledger.db ({len(ledger_events_check)} events)")
 else:
-    st.sidebar.warning("[EMPTY] anvil_ledger.db empty / not created")
+    st.sidebar.warning("[EMPTY] vulx_ledger.db empty / not created")
 
 # Check retrain_comparison.json
 if os.path.exists(retrain_path):
@@ -162,12 +162,12 @@ if st.sidebar.button("Refresh Ledger Data"):
 # -----------------------------------------------------------------------------
 # Main Dashboard Header & Navigation
 # -----------------------------------------------------------------------------
-st.title("Anvil: Policy-as-Code Routing & Governance Platform")
+st.title("VulX: Policy-as-Code Routing & Governance Platform")
 st.caption("Standard Decision Contracts • SHAP Explainability • Policy Routing • SQLite Audit Ledger • Feedback Retraining")
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Live Run",
-    "Compare: Naive vs Anvil",
+    "Compare: Naive vs VulX",
     "Ledger Explorer",
     "Policy Lab",
     "Metrics & Retrain Impact",
@@ -260,7 +260,7 @@ with tab1:
             else:
                 route_badge = "[HUMAN_REVIEW]"
             st.markdown(
-                f"**2. Anvil Policy Engine:** Routing Decision = **{route_badge}**  \n"
+                f"**2. VulX Policy Engine:** Routing Decision = **{route_badge}**  \n"
                 f"**Rationale Trace:**  \n"
                 + "\n".join([f"&nbsp;&nbsp;&nbsp;&nbsp;• `{r}`" for r in policy_res["rationale_trace"]])
                 + f"  \n*Source: `policies.yaml` (`{policy_ms:.2f} ms`)*"
@@ -281,7 +281,7 @@ with tab1:
                 f"**4. SQLite Audit Ledger:** Correctness = {corr_badge} | "
                 f"Legal Basis = **{rec_event['legal_basis_tag']}** | "
                 f"Retention = **{rec_event['retention_class']}**  \n"
-                f"*Source: `anvil_ledger.db` (`{ledger_ms:.2f} ms`)*"
+                f"*Source: `vulx_ledger.db` (`{ledger_ms:.2f} ms`)*"
             )
 
             # Stage 5: Decoupled Async SHAP Explanation
@@ -311,10 +311,10 @@ with tab1:
 
 
 # =============================================================================
-# TAB 2: COMPARE: NAIVE VS ANVIL
+# TAB 2: COMPARE: NAIVE VS VULX
 # =============================================================================
 with tab2:
-    st.subheader("Batch Evaluation Comparison: Raw ML Naive Model vs Anvil Policy Engine")
+    st.subheader("Batch Evaluation Comparison: Raw ML Naive Model vs VulX Policy Engine")
 
     if not os.path.exists(events_csv_path):
         st.error("File `events.csv` not found. Please run `generate_events.py` first.")
@@ -335,7 +335,7 @@ with tab2:
 
         batch_records = []
         wrongful_naive_blocks = 0
-        anvil_saved_via_verify = 0
+        vulx_saved_via_verify = 0
 
         for _, row in df_batch.iterrows():
             tx_dict = row.to_dict()
@@ -343,24 +343,24 @@ with tab2:
             naive_act = contract["naive_recommended_action"]
 
             policy_res = evaluate(contract, DEFAULT_POLICIES_PATH)
-            anvil_act = policy_res["routing_decision"]
+            vulx_act = policy_res["routing_decision"]
 
             gt = str(tx_dict.get("ground_truth_label")).lower().strip()
             is_legit = gt in ["legitimate", "normal", "legitimate_but_unusual"]
 
             if naive_act == "BLOCK" and is_legit:
                 wrongful_naive_blocks += 1
-                if anvil_act == "VERIFY":
-                    anvil_saved_via_verify += 1
+                if vulx_act == "VERIFY":
+                    vulx_saved_via_verify += 1
 
-            diverged = (naive_act != anvil_act)
+            diverged = (naive_act != vulx_act)
 
             batch_records.append({
                 "transaction_id": str(tx_dict.get("transaction_id"))[:16],
                 "amount": f"INR {tx_dict.get('amount', 0.0):,.0f}",
                 "category_tag": tx_dict.get("category_tag"),
                 "naive_action": naive_act,
-                "anvil_action": anvil_act,
+                "vulx_action": vulx_act,
                 "ground_truth_label": gt,
                 "diverged": diverged,
             })
@@ -373,11 +373,11 @@ with tab2:
         col_m1, col_m2, col_m3 = st.columns(3)
         col_m1.metric("Batch Size", len(df_batch))
         col_m2.metric("Naive Model Wrongful Blocks", wrongful_naive_blocks, delta="- High False Positives", delta_color="inverse")
-        col_m3.metric("Anvil Prevented via VERIFY", anvil_saved_via_verify, delta="+ Recovered Purchases", delta_color="normal")
+        col_m3.metric("VulX Prevented via VERIFY", vulx_saved_via_verify, delta="+ Recovered Purchases", delta_color="normal")
 
         st.markdown(
             f"> **Live Governance Finding**: Naive ML model would have wrongfully blocked **{wrongful_naive_blocks}** legitimate transactions. "
-            f"Anvil Policy Engine routed **{anvil_saved_via_verify}** of them to **VERIFY** step-up authentication, saving legitimate sales!"
+            f"VulX Policy Engine routed **{vulx_saved_via_verify}** of them to **VERIFY** step-up authentication, saving legitimate sales!"
         )
 
         st.markdown("#### Transaction Decision Comparison Table (Diverged Rows Highlighted)")
@@ -403,7 +403,7 @@ with tab3:
     ledger_rows = cached_query_ledger()
 
     if not ledger_rows:
-        st.warning("SQLite ledger `anvil_ledger.db` is currently empty. Run transactions in Tab 1 or `run_pipeline.py` to populate events.")
+        st.warning("SQLite ledger `vulx_ledger.db` is currently empty. Run transactions in Tab 1 or `run_pipeline.py` to populate events.")
     else:
         df_ledger = pd.DataFrame(ledger_rows)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Anvil Synthetic Payment Event Generator
+VulX Synthetic Payment Event Generator
 ----------------------------------------
 Generates synthetic payment transactions for evaluating fraud detection prototypes.
 Features correlated risk signals, 6 category distributions, log-normal amount distributions,
@@ -18,15 +18,15 @@ from pathlib import Path
 # Add src/ directory to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from anvil.config import DEFAULT_N_EVENTS, DEFAULT_SEED, DEFAULT_OUTPUT_CSV, DEFAULT_DEMO_JSON
-from anvil.generator.event_builder import generate_dataset
-from anvil.generator.showcase import get_showcase_demo_cases
-from anvil.utils.output_formatter import print_summary_table
+from vulx.config import DEFAULT_N_EVENTS, DEFAULT_SEED, DEFAULT_OUTPUT_CSV, DEFAULT_DEMO_JSON
+from vulx.generator.event_builder import generate_dataset
+from vulx.generator.showcase import get_showcase_demo_cases
+from vulx.utils.output_formatter import print_summary_table
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Generate synthetic payment events for Anvil fraud detection prototype."
+        description="Generate synthetic payment events for VulX fraud detection prototype."
     )
     parser.add_argument(
         "--n_events",
@@ -57,7 +57,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    print(f"Initializing Anvil Payment Event Generator (n_events={args.n_events}, seed={args.seed})...")
+    print(f"Initializing VulX Payment Event Generator (n_events={args.n_events}, seed={args.seed})...")
 
     # Ensure parent directories exist
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)

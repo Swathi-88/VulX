@@ -1,5 +1,5 @@
 """
-Anvil Continuous Feedback Pipeline (feedback_pipeline.py)
+VulX Continuous Feedback Pipeline (feedback_pipeline.py)
 
 Queries SQLite audit ledger for false positives (FP) and false negatives (FN),
 reconstructs feature rows, pairs them with ground truth corrections, and exports
@@ -19,11 +19,11 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-from anvil.config import DEFAULT_DEMO_JSON, DEFAULT_OUTPUT_CSV, PROCESSED_DATA_DIR
-from anvil.ledger import query_ledger, record_event
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate
-from anvil.execution_engine import execute
+from vulx.config import DEFAULT_DEMO_JSON, DEFAULT_OUTPUT_CSV, PROCESSED_DATA_DIR
+from vulx.ledger import query_ledger, record_event
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate
+from vulx.execution_engine import execute
 
 
 def extract_feedback(db_path=None, output_csv=None):
@@ -99,7 +99,7 @@ def extract_feedback(db_path=None, output_csv=None):
                 corrections.append(row_dict)
 
     print("=" * 80)
-    print(" ANVIL CONTINUOUS FEEDBACK PIPELINE — CORRECTION EXTRACTION")
+    print(" VULX CONTINUOUS FEEDBACK PIPELINE — CORRECTION EXTRACTION")
     print("=" * 80)
     print(f"  Total Ledger Events Analyzed:    {len(events)}")
     print(f"  Total Corrections Extracted:     {len(corrections)}")

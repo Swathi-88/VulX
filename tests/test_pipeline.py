@@ -1,14 +1,14 @@
 """
-PyTest unit and integration test suite for Anvil Phase 4 (Execution Engine, SQLite Ledger, and Pipeline)
+PyTest unit and integration test suite for VulX Phase 4 (Execution Engine, SQLite Ledger, and Pipeline)
 """
 
 import json
 import os
 import tempfile
 import pytest
-from anvil.config import DEFAULT_DEMO_JSON
-from anvil.execution_engine import execute
-from anvil.ledger import (
+from vulx.config import DEFAULT_DEMO_JSON
+from vulx.execution_engine import execute
+from vulx.ledger import (
     compute_correctness,
     compute_legal_basis,
     compute_retention_class,
@@ -16,8 +16,8 @@ from anvil.ledger import (
     query_ledger,
     record_event,
 )
-from anvil.models.decision_contract import get_decision_contract
-from anvil.policy_engine import evaluate
+from vulx.models.decision_contract import get_decision_contract
+from vulx.policy_engine import evaluate
 
 
 @pytest.fixture

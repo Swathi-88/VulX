@@ -1,5 +1,5 @@
 """
-PyTest unit test suite for Anvil Phase 5 (Feedback Pipeline, Retraining Comparison, and System Metrics)
+PyTest unit test suite for VulX Phase 5 (Feedback Pipeline, Retraining Comparison, and System Metrics)
 """
 
 import json
@@ -7,7 +7,7 @@ import os
 import tempfile
 import pytest
 import pandas as pd
-from anvil.config import DEFAULT_DEMO_JSON
+from vulx.config import DEFAULT_DEMO_JSON
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
@@ -79,7 +79,7 @@ def test_metrics_dashboard_calculation():
     assert "verify_analysis" in metrics
     assert "human_review_analysis" in metrics
     assert "naive_baseline" in metrics
-    assert "anvil_system" in metrics
+    assert "vulx_system" in metrics
 
     assert metrics["total_events"] > 0
     assert "ALLOW" in metrics["routing_distribution"]

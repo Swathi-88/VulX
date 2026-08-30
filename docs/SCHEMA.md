@@ -1,6 +1,6 @@
-# Anvil Synthetic Payment Event Dataset Schema
+# VulX Synthetic Payment Event Dataset Schema
 
-This document details the schema, statistical distributions, feature correlations, and category construction rules for the **Anvil** synthetic payment event dataset generator (`generate_events.py`).
+This document details the schema, statistical distributions, feature correlations, and category construction rules for the **VulX** synthetic payment event dataset generator (`generate_events.py`).
 
 ---
 
@@ -108,7 +108,7 @@ To provide reproducible testing vectors for rule engines and ML prototypes, `gen
    - `customer_tenure_days`: 400
    - `ip_reputation_score`: 0.60
    - `ground_truth_label`: `"legitimate"`
-   - *Purpose*: Prove Anvil can evaluate customer tenure and merchant trust to avoid flagging legitimate high-value purchases.
+   - *Purpose*: Prove VulX can evaluate customer tenure and merchant trust to avoid flagging legitimate high-value purchases.
 
 2. **Showcase True Fraud Counterpart (`demo_fraud_001_counterpart`)**:
    - `amount`: 48,000.00 INR

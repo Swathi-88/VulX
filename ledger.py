@@ -1,8 +1,8 @@
 """
-Anvil SQLite Ledger Root Re-export
+VulX SQLite Ledger Root Re-export
 """
 
-from anvil.ledger import (
+from vulx.ledger import (
     init_db,
     record_event,
     query_ledger,

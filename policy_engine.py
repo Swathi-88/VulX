@@ -1,18 +1,18 @@
 """
-Anvil Policy Engine Root Re-export & CLI helper
+VulX Policy Engine Root Re-export & CLI helper
 """
 
 import os
-from anvil.policy_engine import evaluate, load_policies
+from vulx.policy_engine import evaluate, load_policies
 
 __all__ = ["evaluate", "load_policies"]
 
 if __name__ == "__main__":
     import json
-    from anvil.config import DEFAULT_DEMO_JSON
-    from anvil.models.decision_contract import get_decision_contract
+    from vulx.config import DEFAULT_DEMO_JSON
+    from vulx.models.decision_contract import get_decision_contract
 
-    print("Evaluating demo cases with Anvil Policy Engine...")
+    print("Evaluating demo cases with VulX Policy Engine...")
     if os.path.exists(DEFAULT_DEMO_JSON):
         with open(DEFAULT_DEMO_JSON, "r", encoding="utf-8") as f:
             cases = json.load(f)
