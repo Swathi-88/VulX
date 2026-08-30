@@ -4,7 +4,7 @@ Anvil is a policy-as-code routing and audit layer for payment fraud detection sy
 
 ---
 
-## ⚡ Quick Start & Execution
+## Quick Start & Execution
 
 ### 1. Install Dependencies
 ```bash
@@ -50,7 +50,7 @@ streamlit run app.py
 
 ---
 
-## 📁 Repository Structure & Documentation
+## Repository Structure & Documentation
 
 ```
 .
@@ -89,7 +89,7 @@ streamlit run app.py
 
 ---
 
-## 🧪 Running Automated Tests
+## Running Automated Tests
 
 Run the complete PyTest test suite:
 ```bash

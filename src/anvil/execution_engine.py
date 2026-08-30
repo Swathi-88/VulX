@@ -47,6 +47,14 @@ def execute(
             "final_outcome": "completed",
         }
 
+    elif decision == "BLOCK":
+        return {
+            "action_taken": "BLOCK",
+            "verification_outcome": None,
+            "human_review_outcome": None,
+            "final_outcome": "blocked",
+        }
+
     elif decision == "VERIFY":
         # Simulate step-up verification draw against success_prob
         draw = rng.random()

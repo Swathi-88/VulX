@@ -5,9 +5,9 @@
 
 ---
 
-## ⏱️ Timeline & Scene-by-Scene Script
+## Timeline & Scene-by-Scene Script
 
-### 🎬 Scene 1: The One-Line Thesis (0:00 – 0:30)
+### Scene 1: The One-Line Thesis (0:00 – 0:30)
 **Visual**: Presenter on camera / Title slide showing **"Vulcan answers what should happen. Anvil answers what we're allowed to do about it."**
 
 > **Speaker**:  
@@ -17,7 +17,7 @@
 
 ---
 
-### 🎬 Scene 2: The Killer Demo Case Run Live (0:30 – 2:00)
+### Scene 2: The Killer Demo Case Run Live (0:30 – 2:00)
 **Visual**: Terminal screen running `python run_pipeline.py` / Streamlit UI `app.py` showcasing Transaction `demo_fp_001_showcase`.
 
 > **Speaker**:  
@@ -33,7 +33,7 @@
 
 ---
 
-### 🎬 Scene 3: Metrics Dashboard & Feedback Retraining (2:00 – 3:30)
+### Scene 3: Metrics Dashboard & Feedback Retraining (2:00 – 3:30)
 **Visual**: Running `python metrics_dashboard.py` and `python retrain_and_compare.py` on terminal / Dashboard UI.
 
 > **Speaker**:  
@@ -47,7 +47,7 @@
 
 ---
 
-### 🎬 Scene 4: Why Anvil Beats Single-Track Submissions (3:30 – 4:30)
+### Scene 4: Why Anvil Beats Single-Track Submissions (3:30 – 4:30)
 **Visual**: Slide highlighting the 4 Buildathon Track Pillars vs Anvil Capabilities.
 
 > **Speaker**:  
@@ -62,7 +62,7 @@
 
 ---
 
-### 🎬 Scene 5: Future Roadmap & Production Scaling (4:30 – 5:00)
+### Scene 5: Future Roadmap & Production Scaling (4:30 – 5:00)
 **Visual**: Closing slide with GitHub repository link & architecture diagram.
 
 > **Speaker**:  

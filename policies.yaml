@@ -66,37 +66,44 @@ purpose_constraint_rules:
     - BLOCK
 
 routing_rules:
-  - name: "Rule 1: High FP cost protection for reversible actions"
+  # 1. VIP False Positive Protection: Tenured customer + High value + Reversible -> Automated Step-Up 2FA
+  - name: "Rule 1: High FP cost VIP protection"
     condition: "fp_cost == 'high' and is_reversible and confidence != 'high'"
     decision: "VERIFY"
-    rationale: "final: VERIFY because high FP cost + reversible + not high confidence"
+    rationale: "final: VERIFY because high FP cost VIP customer requires step-up 2FA to prevent false positive block"
 
-  - name: "Rule 2: High FP cost with high confidence review"
-    condition: "fp_cost == 'high' and is_reversible and confidence == 'high'"
-    decision: "HUMAN_REVIEW"
-    rationale: "final: HUMAN_REVIEW because high FP cost + reversible + high confidence"
-
-  - name: "Rule 3: Elevated risk with medium or low FP cost"
+  # 2. Automated Hard Block: High risk on non-VIP / low FP cost account -> Direct Automated BLOCK
+  - name: "Rule 2: Automated high-risk fraud block"
     condition: "naive_recommended_action == 'BLOCK' and fp_cost != 'high'"
-    decision: "HUMAN_REVIEW"
-    rationale: "final: HUMAN_REVIEW because high risk probability with low/medium FP cost profile"
+    decision: "BLOCK"
+    rationale: "final: BLOCK because high fraud probability detected on non-VIP account with genuine fraud signals"
 
+  # 3. High Risk VIP Exception: High risk on VIP with high confidence -> Senior Analyst Review
+  - name: "Rule 3: High FP cost high confidence exception review"
+    condition: "fp_cost == 'high' and is_reversible and confidence == 'high' and naive_recommended_action == 'BLOCK'"
+    decision: "HUMAN_REVIEW"
+    rationale: "final: HUMAN_REVIEW because high fraud probability on VIP account requires manual analyst confirmation"
+
+  # 4. Purpose Constraint: Cross-merchant signal on low-risk -> Automated Step-Up 2FA
   - name: "Rule 4: Purpose constraint minimum action requirement"
     condition: "purpose_constraint_triggered and naive_recommended_action == 'ALLOW'"
     decision: "VERIFY"
-    rationale: "final: VERIFY because purpose constraint triggered (cross-merchant signal): minimum action VERIFY required"
+    rationale: "final: VERIFY because cross-merchant derived signals mandate automated step-up verification"
 
-  - name: "Rule 5: Irreversible action safety fallback"
+  # 5. Borderline Risk: Automate with Step-up 2FA instead of blocking or human review
+  - name: "Rule 5: Borderline risk automated verification"
+    condition: "naive_recommended_action == 'REVIEW' or (risk_probability >= 0.35 and risk_probability < 0.70)"
+    decision: "VERIFY"
+    rationale: "final: VERIFY because borderline risk is resolved automatically via step-up 2FA challenge"
+
+  # 6. Irreversible Action Safety Fallback: Permanent suspensions require human oversight
+  - name: "Rule 6: Irreversible action safety fallback"
     condition: "not is_reversible"
     decision: "HUMAN_REVIEW"
-    rationale: "final: HUMAN_REVIEW because action is irreversible and requires manual review"
+    rationale: "final: HUMAN_REVIEW because irreversible account suspension requires manual review"
 
-  - name: "Rule 6: Borderline risk human review"
-    condition: "naive_recommended_action == 'REVIEW' or risk_probability >= 0.30"
-    decision: "HUMAN_REVIEW"
-    rationale: "final: HUMAN_REVIEW because risk probability is in review range"
-
-  - name: "Rule 7: Low risk default allow"
+  # 7. Clean Automated Settlement: Low risk -> Immediate Allow
+  - name: "Rule 7: Low risk automated allow"
     condition: "True"
     decision: "ALLOW"
-    rationale: "final: ALLOW because low risk probability and low FP cost impact"
+    rationale: "final: ALLOW because transaction has low risk probability and clean profile"

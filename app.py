@@ -31,14 +31,13 @@ def run_streamlit_app():
 
     st.set_page_config(
         page_title="Anvil Fraud Decision & Policy Engine",
-        page_icon="🛡️",
         layout="wide",
     )
 
-    st.title("🛡️ Anvil: Policy-as-Code Fraud Routing System")
+    st.title("Anvil: Policy-as-Code Fraud Routing System")
     st.caption("Standard Decision Contracts • Explainable SHAP Signals • Policy Routing • SQLite Audit Ledger")
 
-    tab1, tab2, tab3 = st.tabs(["🚀 Live Pipeline Demo", "📜 Policy Config (YAML)", "📊 SQLite Audit Ledger"])
+    tab1, tab2, tab3 = st.tabs(["Live Pipeline Demo", "Policy Config (YAML)", "SQLite Audit Ledger"])
 
     # Load Demo Cases
     demo_cases = []

@@ -4,7 +4,7 @@ Anvil is an end-to-end, policy-governed payment fraud detection and routing plat
 
 ---
 
-## 🏗️ End-to-End Pipeline Diagram
+## End-to-End Pipeline Diagram
 
 ```mermaid
 flowchart TD
@@ -19,7 +19,7 @@ flowchart TD
 
 ---
 
-## 📖 Stage-by-Stage Technical Specifications
+## Stage-by-Stage Technical Specifications
 
 ### Stage 1: Synthetic Event Generator (`src/anvil/generator/`)
 Generates realistic payment transaction datasets with correlated fraud risk signals, 6 statistical category distributions (`normal`, `suspicious`, `borderline`, `fraud`, `legitimate_but_unusual`, `merchant_anomaly`), log-normal payment amount distributions, and fixed showcase test vectors (`demo_cases.json`). It provides reproducible ground-truth labels for model training and systematic policy benchmarking.

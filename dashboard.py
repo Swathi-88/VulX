@@ -46,7 +46,6 @@ from anvil.policy_engine import evaluate, load_policies
 
 st.set_page_config(
     page_title="Anvil Fraud Routing & Governance Engine",
-    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -90,7 +89,7 @@ cached_load_models()
 # -----------------------------------------------------------------------------
 # Sidebar Status Checklist
 # -----------------------------------------------------------------------------
-st.sidebar.title("🛡️ Anvil System State")
+st.sidebar.title("Anvil System State")
 st.sidebar.caption("Real-Time Artifact Checklist")
 
 events_csv_path = DEFAULT_OUTPUT_CSV if os.path.exists(DEFAULT_OUTPUT_CSV) else "events.csv"
@@ -105,57 +104,57 @@ bench_path = str(MODELS_DIR / "benchmark_results.json") if os.path.exists(str(MO
 # Check events.csv
 if os.path.exists(events_csv_path):
     df_raw_check = pd.read_csv(events_csv_path)
-    st.sidebar.success(f"✅ events.csv ({len(df_raw_check):,} rows)")
+    st.sidebar.success(f"[OK] events.csv ({len(df_raw_check):,} rows)")
 else:
-    st.sidebar.warning("⚠️ events.csv not found (Run generate_events.py)")
+    st.sidebar.warning("[MISSING] events.csv not found (Run generate_events.py)")
 
 # Check demo_cases.json
 demo_cases_list = load_json_file(demo_json_path)
 if demo_cases_list:
-    st.sidebar.success(f"✅ demo_cases.json ({len(demo_cases_list)} scenarios)")
+    st.sidebar.success(f"[OK] demo_cases.json ({len(demo_cases_list)} scenarios)")
 else:
-    st.sidebar.warning("⚠️ demo_cases.json not found")
+    st.sidebar.warning("[MISSING] demo_cases.json not found")
 
 # Check model.pkl
 if os.path.exists(model_pkl_path):
     ens_count = len([f for f in os.listdir(str(MODEL_ENSEMBLE_DIR)) if f.endswith(".pkl")]) if os.path.exists(str(MODEL_ENSEMBLE_DIR)) else 0
-    st.sidebar.success(f"✅ model.pkl & {ens_count} ensemble models")
+    st.sidebar.success(f"[OK] model.pkl & {ens_count} ensemble models")
 else:
-    st.sidebar.error("❌ model.pkl not found (Run train_model.py)")
+    st.sidebar.error("[MISSING] model.pkl not found (Run train_model.py)")
 
 # Check metrics.json
 if os.path.exists(metrics_json_path):
-    st.sidebar.success("✅ metrics.json")
+    st.sidebar.success("[OK] metrics.json")
 else:
-    st.sidebar.warning("⚠️ metrics.json not found")
+    st.sidebar.warning("[MISSING] metrics.json not found")
 
 # Check policies.yaml
 if os.path.exists(policies_yaml_path):
-    st.sidebar.success("✅ policies.yaml")
+    st.sidebar.success("[OK] policies.yaml")
 else:
-    st.sidebar.error("❌ policies.yaml not found")
+    st.sidebar.error("[MISSING] policies.yaml not found")
 
 # Check SQLite ledger
 ledger_events_check = cached_query_ledger()
 if os.path.exists(ledger_db_path):
-    st.sidebar.success(f"✅ anvil_ledger.db ({len(ledger_events_check)} events)")
+    st.sidebar.success(f"[OK] anvil_ledger.db ({len(ledger_events_check)} events)")
 else:
-    st.sidebar.warning("⚠️ anvil_ledger.db empty / not created")
+    st.sidebar.warning("[EMPTY] anvil_ledger.db empty / not created")
 
 # Check retrain_comparison.json
 if os.path.exists(retrain_path):
-    st.sidebar.success("✅ retrain_comparison.json")
+    st.sidebar.success("[OK] retrain_comparison.json")
 else:
-    st.sidebar.info("ℹ️ retrain_comparison.json (Run retrain_and_compare.py)")
+    st.sidebar.info("[INFO] retrain_comparison.json (Run retrain_and_compare.py)")
 
 # Check benchmark_results.json
 if os.path.exists(bench_path):
-    st.sidebar.success("✅ benchmark_results.json")
+    st.sidebar.success("[OK] benchmark_results.json")
 else:
-    st.sidebar.info("ℹ️ benchmark_results.json (Run benchmark.py)")
+    st.sidebar.info("[INFO] benchmark_results.json (Run benchmark.py)")
 
 st.sidebar.markdown("---")
-if st.sidebar.button("🔄 Refresh Ledger Data"):
+if st.sidebar.button("Refresh Ledger Data"):
     st.cache_data.clear()
     st.rerun()
 
@@ -163,15 +162,15 @@ if st.sidebar.button("🔄 Refresh Ledger Data"):
 # -----------------------------------------------------------------------------
 # Main Dashboard Header & Navigation
 # -----------------------------------------------------------------------------
-st.title("🛡️ Anvil: Policy-as-Code Routing & Governance Platform")
+st.title("Anvil: Policy-as-Code Routing & Governance Platform")
 st.caption("Standard Decision Contracts • SHAP Explainability • Policy Routing • SQLite Audit Ledger • Feedback Retraining")
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "⚡ Live Run",
-    "⚖️ Compare: Naive vs Anvil",
-    "📊 Ledger Explorer",
-    "🧪 Policy Lab",
-    "📈 Metrics & Retrain Impact",
+    "Live Run",
+    "Compare: Naive vs Anvil",
+    "Ledger Explorer",
+    "Policy Lab",
+    "Metrics & Retrain Impact",
 ])
 
 
@@ -209,7 +208,7 @@ with tab1:
         tx_info_cols[3].metric("Payment Method", str(selected_tx.get("payment_method", "UPI")))
         tx_info_cols[4].metric("Ground Truth", str(selected_tx.get("ground_truth_label", "legitimate")).upper())
 
-        if st.button("🚀 Run Transaction", type="primary", use_container_width=True):
+        if st.button("Run Transaction", type="primary", use_container_width=True):
             # Time Stage 1: Fast Decision Path
             t0 = time.perf_counter()
             fast_contract = get_fast_decision(selected_tx, DEFAULT_MODEL_PATH, str(MODEL_ENSEMBLE_DIR))
@@ -252,7 +251,14 @@ with tab1:
             )
 
             route_dec = policy_res["routing_decision"]
-            route_badge = "🟢 ALLOW" if route_dec == "ALLOW" else ("🟠 VERIFY" if route_dec == "VERIFY" else "🔴 HUMAN_REVIEW")
+            if route_dec == "ALLOW":
+                route_badge = "[ALLOW]"
+            elif route_dec == "BLOCK":
+                route_badge = "[BLOCK]"
+            elif route_dec == "VERIFY":
+                route_badge = "[VERIFY]"
+            else:
+                route_badge = "[HUMAN_REVIEW]"
             st.markdown(
                 f"**2. Anvil Policy Engine:** Routing Decision = **{route_badge}**  \n"
                 f"**Rationale Trace:**  \n"
@@ -495,7 +501,7 @@ with tab4:
             pol_curr["false_positive_cost_table"]["tenure_buckets"]["short_max_days"] = ten_short
             pol_curr["false_positive_cost_table"]["tenure_buckets"]["medium_max_days"] = ten_med
 
-        if st.button("🔄 Reset to disk policies.yaml defaults"):
+        if st.button("Reset to disk policies.yaml defaults"):
             st.session_state["in_memory_policies"] = json.loads(json.dumps(disk_policies))
             st.rerun()
 
@@ -552,7 +558,7 @@ with tab5:
     retrain_data = load_json_file(retrain_path)
 
     if not retrain_data:
-        st.info("⚠️ `retrain_comparison.json` not found. Run `python retrain_and_compare.py` first to generate real retraining metrics.")
+        st.info("[NOTE] `retrain_comparison.json` not found. Run `python retrain_and_compare.py` first to generate real retraining metrics.")
     else:
         base_m = retrain_data.get("baseline_model", {})
         ret_m = retrain_data.get("retrained_model", {})
@@ -577,7 +583,7 @@ with tab5:
     bench_data = load_json_file(bench_path)
 
     if not bench_data:
-        st.info("⚠️ `benchmark_results.json` not found. Run `python benchmark.py` to measure real latency distributions.")
+        st.info("[NOTE] `benchmark_results.json` not found. Run `python benchmark.py` to measure real latency distributions.")
     else:
         b_cols = st.columns(4)
         b_cols[0].metric("Fast Decision Path p50", f"{bench_data['fast_decision_path_ms']['p50']:.3f} ms")
