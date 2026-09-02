@@ -403,7 +403,25 @@ with tab3:
     ledger_rows = cached_query_ledger()
 
     if not ledger_rows:
-        st.warning("SQLite ledger `vulx_ledger.db` is currently empty. Run transactions in Tab 1 or `run_pipeline.py` to populate events.")
+        st.info("SQLite ledger `vulx_ledger.db` is currently empty on this instance.")
+        if st.button("⚡ Pre-Populate Ledger with Demo Cases (One-Click)", type="primary"):
+            if demo_cases_list:
+                for case in demo_cases_list:
+                    contract = get_fast_decision(case, DEFAULT_MODEL_PATH, str(MODEL_ENSEMBLE_DIR))
+                    pol_res = evaluate(contract, DEFAULT_POLICIES_PATH)
+                    ex_res = execute(pol_res["routing_decision"], contract, seed=42)
+                    payload = {
+                        **contract,
+                        **pol_res,
+                        **ex_res,
+                        "ground_truth_label": case.get("ground_truth_label", "legitimate"),
+                        "timestamp": case.get("timestamp", "2026-08-26T15:00:00Z"),
+                    }
+                    record_event(payload, DEFAULT_LEDGER_DB_PATH)
+                st.cache_data.clear()
+                st.rerun()
+            else:
+                st.warning("No demo cases found to populate.")
     else:
         df_ledger = pd.DataFrame(ledger_rows)
 
